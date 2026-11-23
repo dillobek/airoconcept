@@ -1,0 +1,36 @@
+# DOMAIN qiymati root .env faylidan olinadi (masalan airoconcept.uz).
+# DNS: {DOMAIN}, www, api, admin, bot — hammasi serverning IP manziliga A yozuv bilan yo'naltirilgan bo'lishi kerak.
+
+{$DOMAIN}, www.{$DOMAIN} {
+	encode gzip zstd
+	reverse_proxy frontend:3000
+}
+
+# Ommaviy API: Meta webhook va tashqi integratsiyalar
+api.{$DOMAIN} {
+	encode gzip
+	# /docs va /openapi.json production'da backend/.env da DOCS_ENABLED=false bilan yopiladi
+	reverse_proxy backend:8000
+}
+
+# Admin panel: statik fayllar + shu domen ostida /api (cookie bir xil origin'da)
+admin.{$DOMAIN} {
+	encode gzip
+	handle /api/* {
+		reverse_proxy backend:8000
+	}
+	handle /docs* {
+		reverse_proxy backend:8000
+	}
+	handle /openapi.json {
+		reverse_proxy backend:8000
+	}
+	handle {
+		reverse_proxy admin:80
+	}
+}
+
+# Telegram webhook (bot/.env: BOT_MODE=webhook, WEBHOOK_BASE_URL=https://bot.{DOMAIN})
+bot.{$DOMAIN} {
+	reverse_proxy bot:8081
+}

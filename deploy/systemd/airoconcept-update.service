@@ -1,0 +1,11 @@
+[Unit]
+Description=Update AiroConcept from GitHub and redeploy Docker services
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/airoconcept
+ExecStart=/opt/airoconcept/deploy/update.sh
+TimeoutStartSec=30min

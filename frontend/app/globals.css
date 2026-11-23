@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-wood: #b5835a;
+  --color-walnut: #2b1d14;
+  --color-moss: #3f6b52;
+  --color-sand: #f3efea;
+}
+
+html {
+  scroll-behavior: smooth;
+}

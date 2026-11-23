@@ -1,0 +1,39 @@
+{
+  "_izoh": "BU FAYLNI BIZNES EGASI BILAN BIRGA TO'LDIRING. Narxlar namuna sifatida qo'yilgan, real narxlarga almashtiring.",
+  "company": {
+    "name": "AiroConcept",
+    "city": "Toshkent",
+    "work_hours": "Du–Sh, 09:00–19:00",
+    "measurement": "Toshkent bo'ylab zamer bepul",
+    "design": "3D dizayn shartnoma tuzilganda bepul",
+    "warranty": "Mebelga 2 yil kafolat, furnituraga ishlab chiqaruvchi kafolati",
+    "payment": "Shartnomada 50% avans, qolgani o'rnatishdan keyin",
+    "production_time": "Odatda 15–25 ish kuni (murakkablikka qarab)"
+  },
+  "prices": {
+    "oshxona": {"unit": "1 pog'ona metr", "range": "NARXNI KIRITING", "note": "Material (LDSP, MDF, akril) va furnituraga qarab o'zgaradi"},
+    "shkaf-kupe": {"unit": "1 kv. metr fasad", "range": "NARXNI KIRITING", "note": "Ichki to'ldirish va fasad turiga qarab"},
+    "garderob": {"unit": "loyiha", "range": "NARXNI KIRITING", "note": "Zamerdan keyin aniq hisoblanadi"},
+    "yotoqxona": {"unit": "to'plam", "range": "NARXNI KIRITING", "note": "Krovat, tumba, shkaf tarkibiga qarab"},
+    "ofis": {"unit": "loyiha", "range": "NARXNI KIRITING", "note": "Ish o'rinlari soniga qarab"},
+    "boshqa": {"unit": "loyiha", "range": "Zamerdan keyin hisoblanadi", "note": ""}
+  },
+  "materials": {
+    "LDSP": "Eng hamyonbop, chidamli, ranglar ko'p",
+    "MDF (bo'yalgan)": "Silliq fasad, istalgan rang, o'rta narx",
+    "Akril": "Yaltiroq zamonaviy ko'rinish, premium",
+    "Furnitura": "Blum / Hettich / GTV — mijoz tanlovi bo'yicha"
+  },
+  "portfolio": {
+    "oshxona": ["https://example.com/portfolio/oshxona-1", "https://example.com/portfolio/oshxona-2"],
+    "shkaf-kupe": ["https://example.com/portfolio/shkaf-1"],
+    "garderob": ["https://example.com/portfolio/garderob-1"],
+    "yotoqxona": ["https://example.com/portfolio/yotoqxona-1"],
+    "ofis": ["https://example.com/portfolio/ofis-1"]
+  },
+  "objections": {
+    "qimmat": "Narx material va furnituraga bog'liq. Zamerda byudjetingizga mos 2–3 variant tayyorlab beramiz, keyin solishtirasiz.",
+    "o'ylab ko'raman": "Albatta. Zamer bepul va hech narsaga majburlamaydi — aniq narxni bilib olib, keyin bemalol o'ylaysiz.",
+    "boshqa joyda arzon": "Solishtirishda material, furnitura brendi, kafolat va muddatga qarang. Biz shularning hammasini shartnomada yozib beramiz."
+  }
+}

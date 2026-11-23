@@ -1,0 +1,27 @@
+# Maxfiy fayllar — hech qachon commit qilinmaydi
+.env
+.env.*
+!.env.example
+.deploy-commit
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.db
+
+# Node
+node_modules/
+dist/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,109 @@
+# Serverda ishga tushirish:  docker compose up -d --build
+# Har bir servisning .env fayli o'z papkasida turadi (backend/.env, bot/.env, frontend/.env).
+# Postgres va Redis tashqariga OCHILMAYDI — faqat ichki tarmoqda.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: airo
+      POSTGRES_USER: airo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env da yo'q}
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airo -d airo"]
+      interval: 5s
+      retries: 10
+    networks: [internal]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD .env da yo'q}"]
+    volumes: [redisdata:/data]
+    networks: [internal]
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://airo:${POSTGRES_PASSWORD}@postgres:5432/airo
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
+    ports: ["127.0.0.1:4801:8000"]
+    networks: [internal]
+
+  migrate:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://airo:${POSTGRES_PASSWORD}@postgres:5432/airo
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [internal]
+    restart: "no"
+
+  worker:
+    build: ./backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://airo:${POSTGRES_PASSWORD}@postgres:5432/airo
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+    command: ["arq", "app.workers.worker.WorkerSettings"]
+    depends_on: [backend]
+    networks: [internal]
+
+  bot:
+    build: ./bot
+    restart: unless-stopped
+    env_file: ./bot/.env
+    environment:
+      BACKEND_URL: http://backend:8000
+    depends_on: [backend]
+    ports: ["127.0.0.1:4803:8081"]
+    profiles: ["bot"]
+    networks: [internal]
+
+  admin:
+    build: ./admin
+    restart: unless-stopped
+    ports: ["127.0.0.1:4802:80"]
+    networks: [internal]
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    env_file: ./frontend/.env
+    environment:
+      BACKEND_URL: http://backend:8000
+    depends_on: [backend]
+    ports: ["127.0.0.1:4800:3000"]
+    networks: [internal]
+
+  # Yagona tashqi kirish nuqtasi: HTTPS sertifikatlarini avtomatik oladi
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN .env da yo'q}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+    depends_on: [backend, admin, frontend]
+    profiles: ["caddy"]
+    networks: [internal]
+
+volumes:
+  pgdata:
+  redisdata:
+  caddydata:
+
+networks:
+  internal:
