@@ -39,6 +39,7 @@ services:
 
   migrate:
     build: ./backend
+    profiles: ["tools"]
     env_file: ./backend/.env
     environment:
       DATABASE_URL: postgresql+asyncpg://airo:${POSTGRES_PASSWORD}@postgres:5432/airo
