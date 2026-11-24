@@ -47,7 +47,7 @@ def run_webhook() -> None:
     bot, dp, backend = build()
     secret = settings.WEBHOOK_SECRET.get_secret_value()
 
-    async def on_startup(_: Bot) -> None:
+    async def on_startup() -> None:
         await bot.set_webhook(
             settings.WEBHOOK_BASE_URL.rstrip("/") + settings.WEBHOOK_PATH,
             secret_token=secret,
@@ -55,7 +55,7 @@ def run_webhook() -> None:
         )
         await configure_webapp(bot)
 
-    async def on_shutdown(_: Bot) -> None:
+    async def on_shutdown() -> None:
         await backend.close()
 
     dp.startup.register(on_startup)
