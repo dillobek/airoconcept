@@ -6,6 +6,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
+from aiogram.types import MenuButtonWebApp, WebAppInfo
 from aiohttp import web
 
 from bot.backend import BackendClient
@@ -23,9 +24,17 @@ def build() -> tuple[Bot, Dispatcher, BackendClient]:
     return bot, dp, backend
 
 
+async def configure_webapp(bot: Bot) -> None:
+    if settings.WEBAPP_URL:
+        await bot.set_chat_menu_button(
+            menu_button=MenuButtonWebApp(text="AiroConcept", web_app=WebAppInfo(url=settings.WEBAPP_URL))
+        )
+
+
 async def run_polling() -> None:
     bot, dp, backend = build()
     await bot.delete_webhook(drop_pending_updates=False)
+    await configure_webapp(bot)
     try:
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:
@@ -44,6 +53,7 @@ def run_webhook() -> None:
             secret_token=secret,
             allowed_updates=dp.resolve_used_update_types(),
         )
+        await configure_webapp(bot)
 
     async def on_shutdown(_: Bot) -> None:
         await backend.close()

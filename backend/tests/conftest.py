@@ -75,7 +75,13 @@ async def client(enqueued):
 @pytest.fixture
 async def owner():
     async with SessionLocal() as db:
-        u = User(email="owner@test.uz", full_name="Ega", role="owner", password_hash=hash_password("s3cret-password!"))
+        u = User(
+            email="owner@test.uz",
+            username="owner",
+            full_name="Ega",
+            role="owner",
+            password_hash=hash_password("s3cret-password!"),
+        )
         db.add(u)
         await db.commit()
         return u

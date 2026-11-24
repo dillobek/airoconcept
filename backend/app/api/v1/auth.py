@@ -10,7 +10,7 @@ from app.core.ratelimit import limiter
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models import User
 from app.models.base import utcnow
-from app.schemas import LoginIn, TotpEnableIn, TotpSetupOut, UserOut
+from app.schemas import CredentialsUpdateIn, LoginIn, TotpEnableIn, TotpSetupOut, UserOut
 from app.services.audit import audit
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -22,12 +22,12 @@ _DUMMY_HASH = hash_password("timing-attack-dummy")
 @router.post("/login", response_model=UserOut)
 @limiter.limit("5/minute")
 async def login(request: Request, response: Response, data: LoginIn, db: AsyncSession = Depends(get_db)):
-    user = (await db.execute(select(User).where(User.email == data.email.lower()))).scalar_one_or_none()
+    user = (await db.execute(select(User).where(User.username == data.username))).scalar_one_or_none()
     ok = verify_password(data.password, user.password_hash if user else _DUMMY_HASH)
     if not user or not ok or not user.is_active:
-        await audit(db, "anonymous", "auth.login_failed", data={"email": data.email}, ip=client_ip(request))
+        await audit(db, "anonymous", "auth.login_failed", data={"username": data.username}, ip=client_ip(request))
         await db.commit()
-        raise HTTPException(401, "Email yoki parol noto'g'ri")
+        raise HTTPException(401, "Username yoki parol noto'g'ri")
 
     if user.totp_enabled:
         if not data.totp_code:
@@ -64,6 +64,45 @@ async def me(p: Principal = Depends(get_principal)):
     if p.user is None:
         raise HTTPException(403, "Faqat foydalanuvchi sessiyasi uchun")
     return p.user
+
+
+@router.patch("/credentials", response_model=UserOut)
+@limiter.limit("5/minute")
+async def update_credentials(
+    request: Request,
+    data: CredentialsUpdateIn,
+    p: Principal = Depends(get_principal),
+    db: AsyncSession = Depends(get_db),
+):
+    if p.user is None:
+        raise HTTPException(403, "Faqat foydalanuvchi sessiyasi uchun")
+    user = await db.get(User, p.user.id)
+    assert user is not None
+    if not verify_password(data.current_password, user.password_hash):
+        raise HTTPException(401, "Joriy parol noto'g'ri")
+
+    duplicate = (
+        await db.execute(select(User.id).where(User.username == data.username, User.id != user.id))
+    ).scalar_one_or_none()
+    if duplicate is not None:
+        raise HTTPException(409, "Bu username band")
+
+    username_changed = user.username != data.username
+    user.username = data.username
+    password_changed = data.new_password is not None
+    if data.new_password is not None:
+        user.password_hash = hash_password(data.new_password)
+
+    await audit(
+        db,
+        p.actor,
+        "auth.credentials_updated",
+        data={"username_changed": username_changed, "password_changed": password_changed},
+        ip=client_ip(request),
+    )
+    await db.commit()
+    await db.refresh(user)
+    return user
 
 
 @router.post("/2fa/setup", response_model=TotpSetupOut)

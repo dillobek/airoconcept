@@ -1,11 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { api, errorText } from "../api/client";
+import { errorText, type User } from "../api/client";
 import { Button, Card, ErrorBox, Input } from "../components/ui";
 
 export function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [totp, setTotp] = useState("");
   const [needTotp, setNeedTotp] = useState(false);
@@ -19,17 +19,21 @@ export function Login() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const { data, error } = await api.POST("/api/v1/auth/login", {
-      body: { email, password, totp_code: totp || null },
+    const response = await fetch("/api/v1/auth/login", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password, totp_code: totp || null }),
     });
+    const result = (await response.json()) as User | { detail?: unknown };
     setBusy(false);
-    if (error) {
-      const msg = errorText(error);
+    if (!response.ok) {
+      const msg = errorText(result);
       if (msg.includes("2FA")) setNeedTotp(true);
       setError(msg);
       return;
     }
-    qc.setQueryData(["me"], data);
+    qc.setQueryData(["me"], result as User);
     navigate((location.state as { from?: string } | null)?.from ?? "/leads", { replace: true });
   }
 
@@ -39,7 +43,7 @@ export function Login() {
         <h1 className="mb-1 text-xl font-semibold">AiroConcept</h1>
         <p className="mb-6 text-sm text-stone-500">Boshqaruv paneliga kirish</p>
         <form onSubmit={submit} className="space-y-3">
-          <Input type="email" placeholder="Email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Input placeholder="Username" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
           <Input type="password" placeholder="Parol" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           {needTotp && (
             <Input inputMode="numeric" placeholder="2FA kod (6 raqam)" autoComplete="one-time-code" value={totp} onChange={(e) => setTotp(e.target.value)} />

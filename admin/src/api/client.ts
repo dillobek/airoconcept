@@ -10,7 +10,7 @@ export const api = createClient<paths>({ baseUrl: "", credentials: "include" });
 export type Lead = components["schemas"]["LeadOut"];
 export type LeadPage = components["schemas"]["LeadPage"];
 export type Conversation = components["schemas"]["ConversationOut"];
-export type User = components["schemas"]["UserOut"];
+export type User = components["schemas"]["UserOut"] & { username: string };
 export type ApiKey = components["schemas"]["ApiKeyOut"];
 
 export function errorText(error: unknown): string {

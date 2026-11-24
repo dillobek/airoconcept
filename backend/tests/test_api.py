@@ -9,7 +9,7 @@ async def test_health(client):
 
 
 async def test_login_cookie_and_me(client, owner):
-    r = await client.post("/api/v1/auth/login", json={"email": "owner@test.uz", "password": "s3cret-password!"})
+    r = await client.post("/api/v1/auth/login", json={"username": "owner", "password": "s3cret-password!"})
     assert r.status_code == 200
     assert "airo_session" in r.cookies
     assert "httponly" in r.headers["set-cookie"].lower()
@@ -18,8 +18,23 @@ async def test_login_cookie_and_me(client, owner):
 
 
 async def test_login_wrong_password(client, owner):
-    r = await client.post("/api/v1/auth/login", json={"email": "owner@test.uz", "password": "nope"})
+    r = await client.post("/api/v1/auth/login", json={"username": "owner", "password": "nope"})
     assert r.status_code == 401
+
+
+async def test_change_username_and_password(client, owner):
+    await client.post("/api/v1/auth/login", json={"username": "owner", "password": "s3cret-password!"})
+    r = await client.patch(
+        "/api/v1/auth/credentials",
+        json={"current_password": "s3cret-password!", "username": "admin", "new_password": "new-secure-password!"},
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["username"] == "admin"
+    client.cookies.clear()
+    old = await client.post("/api/v1/auth/login", json={"username": "owner", "password": "s3cret-password!"})
+    assert old.status_code == 401
+    new = await client.post("/api/v1/auth/login", json={"username": "admin", "password": "new-secure-password!"})
+    assert new.status_code == 200
 
 
 async def test_unauthorized_without_credentials(client):
@@ -34,7 +49,7 @@ async def test_api_key_scopes_enforced(client):
 
 
 async def test_owner_creates_and_revokes_key(client, owner):
-    await client.post("/api/v1/auth/login", json={"email": "owner@test.uz", "password": "s3cret-password!"})
+    await client.post("/api/v1/auth/login", json={"username": "owner", "password": "s3cret-password!"})
     r = await client.post("/api/v1/api-keys", json={"name": "Sayt", "scopes": ["leads:write"]})
     assert r.status_code == 201
     raw, kid = r.json()["key"], r.json()["id"]
@@ -48,7 +63,7 @@ async def test_owner_creates_and_revokes_key(client, owner):
 
 
 async def test_invalid_scope_rejected(client, owner):
-    await client.post("/api/v1/auth/login", json={"email": "owner@test.uz", "password": "s3cret-password!"})
+    await client.post("/api/v1/auth/login", json={"username": "owner", "password": "s3cret-password!"})
     r = await client.post("/api/v1/api-keys", json={"name": "X", "scopes": ["admin:all"]})
     assert r.status_code == 422
 

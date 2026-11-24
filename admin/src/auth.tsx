@@ -9,7 +9,7 @@ export function useMe() {
     queryFn: async (): Promise<User | null> => {
       const { data, response } = await api.GET("/api/v1/auth/me");
       if (response.status === 401) return null;
-      return data ?? null;
+      return (data as User | undefined) ?? null;
     },
     retry: false,
     staleTime: 60_000,

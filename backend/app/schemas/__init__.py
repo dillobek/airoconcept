@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ORM(BaseModel):
@@ -9,13 +9,19 @@ class ORM(BaseModel):
 
 # ---------- Auth ----------
 class LoginIn(BaseModel):
-    email: EmailStr
+    username: str = Field(min_length=3, max_length=64, pattern=r"^[A-Za-z0-9_.-]+$")
     password: str = Field(min_length=1, max_length=200)
     totp_code: str | None = Field(default=None, max_length=8)
+
+    @field_validator("username")
+    @classmethod
+    def normalize_username(cls, value: str) -> str:
+        return value.strip().lower()
 
 
 class UserOut(ORM):
     id: int
+    username: str
     email: str
     full_name: str
     role: str
@@ -29,6 +35,17 @@ class TotpSetupOut(BaseModel):
 
 class TotpEnableIn(BaseModel):
     code: str = Field(min_length=6, max_length=8)
+
+
+class CredentialsUpdateIn(BaseModel):
+    current_password: str = Field(min_length=1, max_length=200)
+    username: str = Field(min_length=3, max_length=64, pattern=r"^[A-Za-z0-9_.-]+$")
+    new_password: str | None = Field(default=None, min_length=12, max_length=200)
+
+    @field_validator("username")
+    @classmethod
+    def normalize_username(cls, value: str) -> str:
+        return value.strip().lower()
 
 
 # ---------- CRM ----------

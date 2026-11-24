@@ -63,7 +63,7 @@ uv sync
 Copy-Item .env.example .env
 uv run python -m app.cli gen-keys        # chiqqan qiymatlarni .env ga qo'ying
 uv run alembic upgrade head
-uv run python -m app.cli create-user --email owner@airoconcept.uz --name "Ega" --role owner
+uv run python -m app.cli create-user --email owner@airoconcept.uz --username admin --name "Ega" --role owner
 uv run uvicorn app.main:app --reload     # http://localhost:8000/docs
 ```
 Ikkinchi oynada worker (Instagram/Messenger xabarlari uchun):
@@ -120,7 +120,7 @@ cp backend/.env.example backend/.env       # ENV=production, DOCS_ENABLED=false,
 cp bot/.env.example bot/.env               # BOT_MODE=webhook, WEBHOOK_BASE_URL=https://bot.DOMAIN
 cp frontend/.env.example frontend/.env
 docker compose up -d --build
-docker compose run --rm backend python -m app.cli create-user --email owner@... --name "Ega" --role owner
+docker compose run --rm backend python -m app.cli create-user --email owner@... --username admin --name "Ega" --role owner
 docker compose run --rm backend python -m app.cli create-api-key --name "Telegram bot" --scopes agent:chat
 docker compose run --rm backend python -m app.cli create-api-key --name "Sayt" --scopes leads:write
 # kalitlarni bot/.env va frontend/.env ga yozib: docker compose up -d

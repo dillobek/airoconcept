@@ -1,6 +1,6 @@
 """Boshqaruv buyruqlari.
 
-uv run python -m app.cli create-user --email owner@airoconcept.uz --name "Ega" --role owner
+uv run python -m app.cli create-user --email owner@airoconcept.uz --username admin --name "Ega" --role owner
 uv run python -m app.cli create-api-key --name "Telegram bot" --scopes agent:chat
 uv run python -m app.cli gen-keys
 uv run python -m app.cli export-openapi > openapi.json
@@ -16,7 +16,7 @@ import sys
 from cryptography.fernet import Fernet
 
 
-async def create_user(email: str, name: str, role: str) -> None:
+async def create_user(email: str, username: str, name: str, role: str) -> None:
     from sqlalchemy import select
 
     from app.core.db import SessionLocal
@@ -30,9 +30,20 @@ async def create_user(email: str, name: str, role: str) -> None:
     if password != getpass.getpass("Parolni takrorlang: "):
         sys.exit("Parollar mos emas")
     async with SessionLocal() as db:
+        username = username.strip().lower()
         if (await db.execute(select(User).where(User.email == email.lower()))).scalar_one_or_none():
             sys.exit("Bu email bilan foydalanuvchi bor")
-        db.add(User(email=email.lower(), full_name=name, role=role, password_hash=hash_password(password)))
+        if (await db.execute(select(User).where(User.username == username))).scalar_one_or_none():
+            sys.exit("Bu username band")
+        db.add(
+            User(
+                email=email.lower(),
+                username=username,
+                full_name=name,
+                role=role,
+                password_hash=hash_password(password),
+            )
+        )
         await db.commit()
     print(f"✅ Foydalanuvchi yaratildi: {email} ({role})")
 
@@ -71,6 +82,7 @@ def main() -> None:
     sub = p.add_subparsers(dest="cmd", required=True)
     u = sub.add_parser("create-user")
     u.add_argument("--email", required=True)
+    u.add_argument("--username", required=True)
     u.add_argument("--name", required=True)
     u.add_argument("--role", default="manager", choices=["owner", "manager", "accountant", "worker"])
     k = sub.add_parser("create-api-key")
@@ -81,7 +93,7 @@ def main() -> None:
     a = p.parse_args()
 
     if a.cmd == "create-user":
-        asyncio.run(create_user(a.email, a.name, a.role))
+        asyncio.run(create_user(a.email, a.username, a.name, a.role))
     elif a.cmd == "create-api-key":
         asyncio.run(create_api_key(a.name, [s.strip() for s in a.scopes.split(",") if s.strip()]))
     elif a.cmd == "gen-keys":

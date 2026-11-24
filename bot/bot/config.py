@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     WEBHOOK_BASE_URL: str = ""  # masalan https://bot.airoconcept.uz
     WEBHOOK_PATH: str = "/tg/webhook"
     WEBHOOK_SECRET: SecretStr = SecretStr("")  # Telegram X-Telegram-Bot-Api-Secret-Token
+    WEBAPP_URL: str = ""
     WEB_HOST: str = "0.0.0.0"  # konteyner ichida barcha interfeyslar
     WEB_PORT: int = 8081
 
