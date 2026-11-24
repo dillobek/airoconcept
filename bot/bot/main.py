@@ -5,6 +5,7 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.exceptions import TelegramRetryAfter
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiogram.types import MenuButtonWebApp, WebAppInfo
 from aiohttp import web
@@ -48,11 +49,17 @@ def run_webhook() -> None:
     secret = settings.WEBHOOK_SECRET.get_secret_value()
 
     async def on_startup() -> None:
-        await bot.set_webhook(
-            settings.WEBHOOK_BASE_URL.rstrip("/") + settings.WEBHOOK_PATH,
-            secret_token=secret,
-            allowed_updates=dp.resolve_used_update_types(),
-        )
+        while True:
+            try:
+                await bot.set_webhook(
+                    settings.WEBHOOK_BASE_URL.rstrip("/") + settings.WEBHOOK_PATH,
+                    secret_token=secret,
+                    allowed_updates=dp.resolve_used_update_types(),
+                )
+                break
+            except TelegramRetryAfter as exc:
+                logging.warning("Telegram webhook limiti: %s soniyadan keyin qayta urinish", exc.retry_after)
+                await asyncio.sleep(exc.retry_after + 1)
         await configure_webapp(bot)
 
     async def on_shutdown() -> None:
