@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import kitchenRoom from "./assets/kitchen-room.png";
 import { CATALOG, CATEGORY_LABELS, MATERIALS, formatMoney, type CatalogItem, type Category, type PlacedItem } from "./catalog";
 const starterItems: PlacedItem[] = [
   { ...CATALOG[0], placementId: "demo-base", x: -1.4, z: -1.95, rotation: 0, color: "#f7f7f2" },
@@ -15,7 +16,7 @@ function Thumb({ item }: { item: CatalogItem }) {
 
 function PhotoRoom({ items, selectedId, onSelect }: { items: PlacedItem[]; selectedId: string | null; onSelect: (id: string) => void }) {
   return <div className="relative h-full w-full overflow-hidden bg-[#e5ded4]">
-    <Image src="/studio/kitchen-room.png" alt="AIRO Studio real oshxona interyeri" fill priority sizes="(max-width: 1280px) 100vw, 60vw" className="object-cover" />
+    <Image src={kitchenRoom} alt="AIRO Studio real oshxona interyeri" fill priority sizes="(max-width: 1280px) 100vw, 60vw" className="object-cover" />
     <div className="absolute inset-x-[16%] bottom-[4%] top-[22%]">
       {items.map((item, index) => {
         const isTall = item.shape === "tall";
