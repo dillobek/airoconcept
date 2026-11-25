@@ -105,6 +105,47 @@
         }
       }
     },
+    "/api/v1/auth/credentials": {
+      "patch": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Update Credentials",
+        "operationId": "update_credentials_api_v1_auth_credentials_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialsUpdateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/2fa/setup": {
       "post": {
         "tags": [
@@ -672,6 +713,1184 @@
           }
         }
       }
+    },
+    "/api/v1/finance/dashboard": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Dashboard",
+        "operationId": "dashboard_api_v1_finance_dashboard_get",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "month",
+              "title": "Period"
+            }
+          },
+          {
+            "name": "anchor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anchor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceDashboardOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/entries": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "List Entries",
+        "operationId": "list_entries_api_v1_finance_entries_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "order_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Order Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FinanceEntryOut"
+                  },
+                  "title": "Response List Entries Api V1 Finance Entries Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Create Entry",
+        "operationId": "create_entry_api_v1_finance_entries_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinanceEntryCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/entries/{entry_id}/approve": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Approve Entry",
+        "operationId": "approve_entry_api_v1_finance_entries__entry_id__approve_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/entries/{entry_id}/reject": {
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Reject Entry",
+        "operationId": "reject_entry_api_v1_finance_entries__entry_id__reject_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/orders": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "List Orders",
+        "operationId": "list_orders_api_v1_finance_orders_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderOut"
+                  },
+                  "title": "Response List Orders Api V1 Finance Orders Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Create Order",
+        "operationId": "create_order_api_v1_finance_orders_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Get Order",
+        "operationId": "get_order_api_v1_finance_orders__order_id__get",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Update Order",
+        "operationId": "update_order_api_v1_finance_orders__order_id__patch",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/debts": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "List Debts",
+        "operationId": "list_debts_api_v1_finance_debts_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DebtOut"
+                  },
+                  "title": "Response List Debts Api V1 Finance Debts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Create Debt",
+        "operationId": "create_debt_api_v1_finance_debts_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebtCreateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebtOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/report": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_finance_report_get",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "month",
+              "title": "Period"
+            }
+          },
+          {
+            "name": "anchor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anchor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/export.xlsx": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Export Xlsx",
+        "operationId": "export_xlsx_api_v1_finance_export_xlsx_get",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "month",
+              "title": "Period"
+            }
+          },
+          {
+            "name": "anchor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anchor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/export.pdf": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Export Pdf",
+        "operationId": "export_pdf_api_v1_finance_export_pdf_get",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "month",
+              "title": "Period"
+            }
+          },
+          {
+            "name": "anchor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anchor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "List Users",
+        "operationId": "list_users_api_v1_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserAdminOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Users Api V1 Users Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create User",
+        "operationId": "create_user_api_v1_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAdminOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{user_id}": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update User",
+        "operationId": "update_user_api_v1_users__user_id__patch",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAdminOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/finance/me/{telegram_chat_id}": {
+      "get": {
+        "tags": [
+          "telegram-finance"
+        ],
+        "summary": "Telegram Me",
+        "operationId": "telegram_me_api_v1_telegram_finance_me__telegram_chat_id__get",
+        "parameters": [
+          {
+            "name": "telegram_chat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Telegram Chat Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramStaffOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/finance/entries": {
+      "post": {
+        "tags": [
+          "telegram-finance"
+        ],
+        "summary": "Telegram Create Entry",
+        "operationId": "telegram_create_entry_api_v1_telegram_finance_entries_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramFinanceEntryIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/finance/debts": {
+      "post": {
+        "tags": [
+          "telegram-finance"
+        ],
+        "summary": "Telegram Create Debt",
+        "operationId": "telegram_create_debt_api_v1_telegram_finance_debts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramDebtIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebtOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/finance/debts/{debt_id}/payment": {
+      "post": {
+        "tags": [
+          "telegram-finance"
+        ],
+        "summary": "Telegram Debt Payment",
+        "operationId": "telegram_debt_payment_api_v1_telegram_finance_debts__debt_id__payment_post",
+        "parameters": [
+          {
+            "name": "debt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Debt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramDebtPaymentIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/finance/report": {
+      "post": {
+        "tags": [
+          "telegram-finance"
+        ],
+        "summary": "Telegram Report",
+        "operationId": "telegram_report_api_v1_telegram_finance_report_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramReportIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceReportOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/finance/orders/{order_id}": {
+      "get": {
+        "tags": [
+          "telegram-finance"
+        ],
+        "summary": "Telegram Order",
+        "operationId": "telegram_order_api_v1_telegram_finance_orders__order_id__get",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Order Id"
+            }
+          },
+          {
+            "name": "telegram_chat_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Telegram Chat Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telegram/finance/entries/{entry_id}/approve": {
+      "post": {
+        "tags": [
+          "telegram-finance"
+        ],
+        "summary": "Telegram Approve",
+        "operationId": "telegram_approve_api_v1_telegram_finance_entries__entry_id__approve_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramApprovalIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinanceEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -949,6 +2168,24 @@
         ],
         "title": "ApiKeyOut"
       },
+      "ApprovalDecisionIn": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "title": "ApprovalDecisionIn"
+      },
       "ClientOut": {
         "properties": {
           "id": {
@@ -1071,6 +2308,531 @@
           "status"
         ],
         "title": "ConversationStatusIn"
+      },
+      "CredentialsUpdateIn": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Current Password"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "title": "Username"
+          },
+          "new_password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_password",
+          "username"
+        ],
+        "title": "CredentialsUpdateIn"
+      },
+      "DebtCreateIn": {
+        "properties": {
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "direction": {
+            "type": "string",
+            "pattern": "^(receivable|payable)$",
+            "title": "Direction"
+          },
+          "counterparty": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Counterparty"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "direction",
+          "counterparty",
+          "amount"
+        ],
+        "title": "DebtCreateIn"
+      },
+      "DebtOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction"
+          },
+          "counterparty": {
+            "type": "string",
+            "title": "Counterparty"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "paid_amount": {
+            "type": "string",
+            "title": "Paid Amount"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "created_by_id": {
+            "type": "integer",
+            "title": "Created By Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "remaining_amount": {
+            "type": "string",
+            "title": "Remaining Amount",
+            "default": "0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_id",
+          "direction",
+          "counterparty",
+          "amount",
+          "paid_amount",
+          "due_date",
+          "status",
+          "description",
+          "created_by_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "DebtOut"
+      },
+      "FinanceDashboardOut": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "period_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Period Start"
+          },
+          "period_end": {
+            "type": "string",
+            "format": "date",
+            "title": "Period End"
+          },
+          "income": {
+            "type": "string",
+            "title": "Income"
+          },
+          "expense": {
+            "type": "string",
+            "title": "Expense"
+          },
+          "profit": {
+            "type": "string",
+            "title": "Profit"
+          },
+          "receivable": {
+            "type": "string",
+            "title": "Receivable"
+          },
+          "payable": {
+            "type": "string",
+            "title": "Payable"
+          },
+          "pending_approvals": {
+            "type": "integer",
+            "title": "Pending Approvals"
+          },
+          "active_orders": {
+            "type": "integer",
+            "title": "Active Orders"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "period_start",
+          "period_end",
+          "income",
+          "expense",
+          "profit",
+          "receivable",
+          "payable",
+          "pending_approvals",
+          "active_orders"
+        ],
+        "title": "FinanceDashboardOut"
+      },
+      "FinanceEntryCreateIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "pattern": "^(income|expense)$",
+            "title": "Kind"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Category"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "occurred_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Occurred On"
+          },
+          "payment_method": {
+            "type": "string",
+            "pattern": "^(cash|card|transfer|other)$",
+            "title": "Payment Method",
+            "default": "cash"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "debt_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Debt Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "amount",
+          "category"
+        ],
+        "title": "FinanceEntryCreateIn"
+      },
+      "FinanceEntryOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "occurred_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Occurred On"
+          },
+          "payment_method": {
+            "type": "string",
+            "title": "Payment Method"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "debt_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Debt Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "created_by_id": {
+            "type": "integer",
+            "title": "Created By Id"
+          },
+          "approved_by_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By Id"
+          },
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Reason"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "amount",
+          "category",
+          "description",
+          "occurred_on",
+          "payment_method",
+          "order_id",
+          "debt_id",
+          "status",
+          "source",
+          "created_by_id",
+          "approved_by_id",
+          "approved_at",
+          "rejection_reason",
+          "created_at"
+        ],
+        "title": "FinanceEntryOut"
+      },
+      "FinanceReportOut": {
+        "properties": {
+          "period": {
+            "type": "string",
+            "title": "Period"
+          },
+          "period_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Period Start"
+          },
+          "period_end": {
+            "type": "string",
+            "format": "date",
+            "title": "Period End"
+          },
+          "income": {
+            "type": "string",
+            "title": "Income"
+          },
+          "expense": {
+            "type": "string",
+            "title": "Expense"
+          },
+          "profit": {
+            "type": "string",
+            "title": "Profit"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ReportPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "period_start",
+          "period_end",
+          "income",
+          "expense",
+          "profit",
+          "points"
+        ],
+        "title": "FinanceReportOut"
       },
       "HTTPValidationError": {
         "properties": {
@@ -1335,10 +3097,12 @@
       },
       "LoginIn": {
         "properties": {
-          "email": {
+          "username": {
             "type": "string",
-            "format": "email",
-            "title": "Email"
+            "maxLength": 64,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "title": "Username"
           },
           "password": {
             "type": "string",
@@ -1361,7 +3125,7 @@
         },
         "type": "object",
         "required": [
-          "email",
+          "username",
           "password"
         ],
         "title": "LoginIn"
@@ -1394,6 +3158,572 @@
           "created_at"
         ],
         "title": "MessageOut"
+      },
+      "OrderCreateIn": {
+        "properties": {
+          "lead_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Id"
+          },
+          "customer_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Customer Name"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Total Amount"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "customer_name",
+          "title",
+          "total_amount"
+        ],
+        "title": "OrderCreateIn"
+      },
+      "OrderOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "lead_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lead Id"
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "total_amount": {
+            "type": "string",
+            "title": "Total Amount"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "created_by_id": {
+            "type": "integer",
+            "title": "Created By Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "income_total": {
+            "type": "string",
+            "title": "Income Total",
+            "default": "0"
+          },
+          "expense_total": {
+            "type": "string",
+            "title": "Expense Total",
+            "default": "0"
+          },
+          "outstanding": {
+            "type": "string",
+            "title": "Outstanding",
+            "default": "0"
+          },
+          "profit": {
+            "type": "string",
+            "title": "Profit",
+            "default": "0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "lead_id",
+          "client_id",
+          "customer_name",
+          "title",
+          "status",
+          "total_amount",
+          "due_date",
+          "notes",
+          "created_by_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "OrderOut"
+      },
+      "OrderUpdateIn": {
+        "properties": {
+          "customer_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Name"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(new|in_progress|completed|cancelled)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "total_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Amount"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "title": "OrderUpdateIn"
+      },
+      "ReportPoint": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "income": {
+            "type": "string",
+            "title": "Income"
+          },
+          "expense": {
+            "type": "string",
+            "title": "Expense"
+          },
+          "profit": {
+            "type": "string",
+            "title": "Profit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "income",
+          "expense",
+          "profit"
+        ],
+        "title": "ReportPoint"
+      },
+      "TelegramApprovalIn": {
+        "properties": {
+          "telegram_chat_id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Telegram Chat Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "telegram_chat_id"
+        ],
+        "title": "TelegramApprovalIn"
+      },
+      "TelegramDebtIn": {
+        "properties": {
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "direction": {
+            "type": "string",
+            "pattern": "^(receivable|payable)$",
+            "title": "Direction"
+          },
+          "counterparty": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Counterparty"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "telegram_chat_id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Telegram Chat Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "direction",
+          "counterparty",
+          "amount",
+          "telegram_chat_id"
+        ],
+        "title": "TelegramDebtIn"
+      },
+      "TelegramDebtPaymentIn": {
+        "properties": {
+          "telegram_chat_id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Telegram Chat Id"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "payment_method": {
+            "type": "string",
+            "pattern": "^(cash|card|transfer|other)$",
+            "title": "Payment Method",
+            "default": "cash"
+          }
+        },
+        "type": "object",
+        "required": [
+          "telegram_chat_id",
+          "amount"
+        ],
+        "title": "TelegramDebtPaymentIn"
+      },
+      "TelegramFinanceEntryIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "pattern": "^(income|expense)$",
+            "title": "Kind"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Category"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "occurred_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Occurred On"
+          },
+          "payment_method": {
+            "type": "string",
+            "pattern": "^(cash|card|transfer|other)$",
+            "title": "Payment Method",
+            "default": "cash"
+          },
+          "order_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Id"
+          },
+          "debt_id": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Debt Id"
+          },
+          "telegram_chat_id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Telegram Chat Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "amount",
+          "category",
+          "telegram_chat_id"
+        ],
+        "title": "TelegramFinanceEntryIn"
+      },
+      "TelegramReportIn": {
+        "properties": {
+          "telegram_chat_id": {
+            "type": "string",
+            "maxLength": 32,
+            "minLength": 1,
+            "title": "Telegram Chat Id"
+          },
+          "period": {
+            "type": "string",
+            "pattern": "^(day|week|month)$",
+            "title": "Period",
+            "default": "day"
+          }
+        },
+        "type": "object",
+        "required": [
+          "telegram_chat_id"
+        ],
+        "title": "TelegramReportIn"
+      },
+      "TelegramStaffOut": {
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "full_name",
+          "role"
+        ],
+        "title": "TelegramStaffOut"
       },
       "TotpEnableIn": {
         "properties": {
@@ -1428,11 +3758,131 @@
         ],
         "title": "TotpSetupOut"
       },
+      "UserAdminOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "totp_enabled": {
+            "type": "boolean",
+            "title": "Totp Enabled"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "telegram_chat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Chat Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "email",
+          "full_name",
+          "role",
+          "totp_enabled",
+          "is_active",
+          "telegram_chat_id",
+          "created_at"
+        ],
+        "title": "UserAdminOut"
+      },
+      "UserCreateIn": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "title": "Username"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 2,
+            "title": "Full Name"
+          },
+          "role": {
+            "type": "string",
+            "pattern": "^(owner|manager|accountant|worker)$",
+            "title": "Role"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 12,
+            "title": "Password"
+          },
+          "telegram_chat_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Chat Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "email",
+          "full_name",
+          "role",
+          "password"
+        ],
+        "title": "UserCreateIn"
+      },
       "UserOut": {
         "properties": {
           "id": {
             "type": "integer",
             "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
           },
           "email": {
             "type": "string",
@@ -1454,12 +3904,80 @@
         "type": "object",
         "required": [
           "id",
+          "username",
           "email",
           "full_name",
           "role",
           "totp_enabled"
         ],
         "title": "UserOut"
+      },
+      "UserUpdateIn": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(owner|manager|accountant|worker)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          },
+          "telegram_chat_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Chat Id"
+          },
+          "new_password": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 12
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "title": "UserUpdateIn"
       },
       "ValidationError": {
         "properties": {

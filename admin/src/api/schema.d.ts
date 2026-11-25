@@ -72,6 +72,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Credentials */
+        patch: operations["update_credentials_api_v1_auth_credentials_patch"];
+        trace?: never;
+    };
     "/api/v1/auth/2fa/setup": {
         parameters: {
             query?: never;
@@ -254,6 +271,334 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/finance/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dashboard */
+        get: operations["dashboard_api_v1_finance_dashboard_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Entries */
+        get: operations["list_entries_api_v1_finance_entries_get"];
+        put?: never;
+        /** Create Entry */
+        post: operations["create_entry_api_v1_finance_entries_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/entries/{entry_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Entry */
+        post: operations["approve_entry_api_v1_finance_entries__entry_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/entries/{entry_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject Entry */
+        post: operations["reject_entry_api_v1_finance_entries__entry_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Orders */
+        get: operations["list_orders_api_v1_finance_orders_get"];
+        put?: never;
+        /** Create Order */
+        post: operations["create_order_api_v1_finance_orders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/orders/{order_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Order */
+        get: operations["get_order_api_v1_finance_orders__order_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Order */
+        patch: operations["update_order_api_v1_finance_orders__order_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/finance/debts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Debts */
+        get: operations["list_debts_api_v1_finance_debts_get"];
+        put?: never;
+        /** Create Debt */
+        post: operations["create_debt_api_v1_finance_debts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report */
+        get: operations["report_api_v1_finance_report_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/export.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Xlsx */
+        get: operations["export_xlsx_api_v1_finance_export_xlsx_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/finance/export.pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Pdf */
+        get: operations["export_pdf_api_v1_finance_export_pdf_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Users */
+        get: operations["list_users_api_v1_users_get"];
+        put?: never;
+        /** Create User */
+        post: operations["create_user_api_v1_users_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update User */
+        patch: operations["update_user_api_v1_users__user_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/telegram/finance/me/{telegram_chat_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Telegram Me */
+        get: operations["telegram_me_api_v1_telegram_finance_me__telegram_chat_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/telegram/finance/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Telegram Create Entry */
+        post: operations["telegram_create_entry_api_v1_telegram_finance_entries_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/telegram/finance/debts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Telegram Create Debt */
+        post: operations["telegram_create_debt_api_v1_telegram_finance_debts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/telegram/finance/debts/{debt_id}/payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Telegram Debt Payment */
+        post: operations["telegram_debt_payment_api_v1_telegram_finance_debts__debt_id__payment_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/telegram/finance/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Telegram Report */
+        post: operations["telegram_report_api_v1_telegram_finance_report_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/telegram/finance/orders/{order_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Telegram Order */
+        get: operations["telegram_order_api_v1_telegram_finance_orders__order_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/telegram/finance/entries/{entry_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Telegram Approve */
+        post: operations["telegram_approve_api_v1_telegram_finance_entries__entry_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -343,6 +688,11 @@ export interface components {
              */
             created_at: string;
         };
+        /** ApprovalDecisionIn */
+        ApprovalDecisionIn: {
+            /** Reason */
+            reason?: string | null;
+        };
         /** ClientOut */
         ClientOut: {
             /** Id */
@@ -383,6 +733,186 @@ export interface components {
         ConversationStatusIn: {
             /** Status */
             status: string;
+        };
+        /** CredentialsUpdateIn */
+        CredentialsUpdateIn: {
+            /** Current Password */
+            current_password: string;
+            /** Username */
+            username: string;
+            /** New Password */
+            new_password?: string | null;
+        };
+        /** DebtCreateIn */
+        DebtCreateIn: {
+            /** Order Id */
+            order_id?: number | null;
+            /** Direction */
+            direction: string;
+            /** Counterparty */
+            counterparty: string;
+            /** Amount */
+            amount: number | string;
+            /** Due Date */
+            due_date?: string | null;
+            /** Description */
+            description?: string | null;
+        };
+        /** DebtOut */
+        DebtOut: {
+            /** Id */
+            id: number;
+            /** Order Id */
+            order_id: number | null;
+            /** Direction */
+            direction: string;
+            /** Counterparty */
+            counterparty: string;
+            /** Amount */
+            amount: string;
+            /** Paid Amount */
+            paid_amount: string;
+            /** Due Date */
+            due_date: string | null;
+            /** Status */
+            status: string;
+            /** Description */
+            description: string | null;
+            /** Created By Id */
+            created_by_id: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Remaining Amount
+             * @default 0
+             */
+            remaining_amount: string;
+        };
+        /** FinanceDashboardOut */
+        FinanceDashboardOut: {
+            /** Period */
+            period: string;
+            /**
+             * Period Start
+             * Format: date
+             */
+            period_start: string;
+            /**
+             * Period End
+             * Format: date
+             */
+            period_end: string;
+            /** Income */
+            income: string;
+            /** Expense */
+            expense: string;
+            /** Profit */
+            profit: string;
+            /** Receivable */
+            receivable: string;
+            /** Payable */
+            payable: string;
+            /** Pending Approvals */
+            pending_approvals: number;
+            /** Active Orders */
+            active_orders: number;
+        };
+        /** FinanceEntryCreateIn */
+        FinanceEntryCreateIn: {
+            /** Kind */
+            kind: string;
+            /** Amount */
+            amount: number | string;
+            /** Category */
+            category: string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Occurred On
+             * Format: date
+             */
+            occurred_on?: string;
+            /**
+             * Payment Method
+             * @default cash
+             */
+            payment_method: string;
+            /** Order Id */
+            order_id?: number | null;
+            /** Debt Id */
+            debt_id?: number | null;
+        };
+        /** FinanceEntryOut */
+        FinanceEntryOut: {
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Amount */
+            amount: string;
+            /** Category */
+            category: string;
+            /** Description */
+            description: string | null;
+            /**
+             * Occurred On
+             * Format: date
+             */
+            occurred_on: string;
+            /** Payment Method */
+            payment_method: string;
+            /** Order Id */
+            order_id: number | null;
+            /** Debt Id */
+            debt_id: number | null;
+            /** Status */
+            status: string;
+            /** Source */
+            source: string;
+            /** Created By Id */
+            created_by_id: number;
+            /** Approved By Id */
+            approved_by_id: number | null;
+            /** Approved At */
+            approved_at: string | null;
+            /** Rejection Reason */
+            rejection_reason: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** FinanceReportOut */
+        FinanceReportOut: {
+            /** Period */
+            period: string;
+            /**
+             * Period Start
+             * Format: date
+             */
+            period_start: string;
+            /**
+             * Period End
+             * Format: date
+             */
+            period_end: string;
+            /** Income */
+            income: string;
+            /** Expense */
+            expense: string;
+            /** Profit */
+            profit: string;
+            /** Points */
+            points: components["schemas"]["ReportPoint"][];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -455,11 +985,8 @@ export interface components {
         };
         /** LoginIn */
         LoginIn: {
-            /**
-             * Email
-             * Format: email
-             */
-            email: string;
+            /** Username */
+            username: string;
             /** Password */
             password: string;
             /** Totp Code */
@@ -479,6 +1006,180 @@ export interface components {
              */
             created_at: string;
         };
+        /** OrderCreateIn */
+        OrderCreateIn: {
+            /** Lead Id */
+            lead_id?: number | null;
+            /** Customer Name */
+            customer_name: string;
+            /** Title */
+            title: string;
+            /** Total Amount */
+            total_amount: number | string;
+            /** Due Date */
+            due_date?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** OrderOut */
+        OrderOut: {
+            /** Id */
+            id: number;
+            /** Lead Id */
+            lead_id: number | null;
+            /** Client Id */
+            client_id: number | null;
+            /** Customer Name */
+            customer_name: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Total Amount */
+            total_amount: string;
+            /** Due Date */
+            due_date: string | null;
+            /** Notes */
+            notes: string | null;
+            /** Created By Id */
+            created_by_id: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Income Total
+             * @default 0
+             */
+            income_total: string;
+            /**
+             * Expense Total
+             * @default 0
+             */
+            expense_total: string;
+            /**
+             * Outstanding
+             * @default 0
+             */
+            outstanding: string;
+            /**
+             * Profit
+             * @default 0
+             */
+            profit: string;
+        };
+        /** OrderUpdateIn */
+        OrderUpdateIn: {
+            /** Customer Name */
+            customer_name?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Total Amount */
+            total_amount?: number | string | null;
+            /** Due Date */
+            due_date?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** ReportPoint */
+        ReportPoint: {
+            /** Label */
+            label: string;
+            /** Income */
+            income: string;
+            /** Expense */
+            expense: string;
+            /** Profit */
+            profit: string;
+        };
+        /** TelegramApprovalIn */
+        TelegramApprovalIn: {
+            /** Telegram Chat Id */
+            telegram_chat_id: string;
+        };
+        /** TelegramDebtIn */
+        TelegramDebtIn: {
+            /** Order Id */
+            order_id?: number | null;
+            /** Direction */
+            direction: string;
+            /** Counterparty */
+            counterparty: string;
+            /** Amount */
+            amount: number | string;
+            /** Due Date */
+            due_date?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Telegram Chat Id */
+            telegram_chat_id: string;
+        };
+        /** TelegramDebtPaymentIn */
+        TelegramDebtPaymentIn: {
+            /** Telegram Chat Id */
+            telegram_chat_id: string;
+            /** Amount */
+            amount: number | string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Payment Method
+             * @default cash
+             */
+            payment_method: string;
+        };
+        /** TelegramFinanceEntryIn */
+        TelegramFinanceEntryIn: {
+            /** Kind */
+            kind: string;
+            /** Amount */
+            amount: number | string;
+            /** Category */
+            category: string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Occurred On
+             * Format: date
+             */
+            occurred_on?: string;
+            /**
+             * Payment Method
+             * @default cash
+             */
+            payment_method: string;
+            /** Order Id */
+            order_id?: number | null;
+            /** Debt Id */
+            debt_id?: number | null;
+            /** Telegram Chat Id */
+            telegram_chat_id: string;
+        };
+        /** TelegramReportIn */
+        TelegramReportIn: {
+            /** Telegram Chat Id */
+            telegram_chat_id: string;
+            /**
+             * Period
+             * @default day
+             */
+            period: string;
+        };
+        /** TelegramStaffOut */
+        TelegramStaffOut: {
+            /** Full Name */
+            full_name: string;
+            /** Role */
+            role: string;
+        };
         /** TotpEnableIn */
         TotpEnableIn: {
             /** Code */
@@ -491,10 +1192,12 @@ export interface components {
             /** Otpauth Url */
             otpauth_url: string;
         };
-        /** UserOut */
-        UserOut: {
+        /** UserAdminOut */
+        UserAdminOut: {
             /** Id */
             id: number;
+            /** Username */
+            username: string;
             /** Email */
             email: string;
             /** Full Name */
@@ -503,6 +1206,58 @@ export interface components {
             role: string;
             /** Totp Enabled */
             totp_enabled: boolean;
+            /** Is Active */
+            is_active: boolean;
+            /** Telegram Chat Id */
+            telegram_chat_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** UserCreateIn */
+        UserCreateIn: {
+            /** Username */
+            username: string;
+            /** Email */
+            email: string;
+            /** Full Name */
+            full_name: string;
+            /** Role */
+            role: string;
+            /** Password */
+            password: string;
+            /** Telegram Chat Id */
+            telegram_chat_id?: string | null;
+        };
+        /** UserOut */
+        UserOut: {
+            /** Id */
+            id: number;
+            /** Username */
+            username: string;
+            /** Email */
+            email: string;
+            /** Full Name */
+            full_name: string;
+            /** Role */
+            role: string;
+            /** Totp Enabled */
+            totp_enabled: boolean;
+        };
+        /** UserUpdateIn */
+        UserUpdateIn: {
+            /** Full Name */
+            full_name?: string | null;
+            /** Role */
+            role?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+            /** Telegram Chat Id */
+            telegram_chat_id?: string | null;
+            /** New Password */
+            new_password?: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -629,6 +1384,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserOut"];
+                };
+            };
+        };
+    };
+    update_credentials_api_v1_auth_credentials_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CredentialsUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -992,6 +1780,782 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AgentMessageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dashboard_api_v1_finance_dashboard_get: {
+        parameters: {
+            query?: {
+                period?: string;
+                anchor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceDashboardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_entries_api_v1_finance_entries_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                kind?: string | null;
+                order_id?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceEntryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_entry_api_v1_finance_entries_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FinanceEntryCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_entry_api_v1_finance_entries__entry_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_entry_api_v1_finance_entries__entry_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApprovalDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_orders_api_v1_finance_orders_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_order_api_v1_finance_orders_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_order_api_v1_finance_orders__order_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_order_api_v1_finance_orders__order_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OrderUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_debts_api_v1_finance_debts_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebtOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_debt_api_v1_finance_debts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DebtCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebtOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_api_v1_finance_report_get: {
+        parameters: {
+            query?: {
+                period?: string;
+                anchor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_xlsx_api_v1_finance_export_xlsx_get: {
+        parameters: {
+            query?: {
+                period?: string;
+                anchor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_pdf_api_v1_finance_export_pdf_get: {
+        parameters: {
+            query?: {
+                period?: string;
+                anchor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_api_v1_users_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdminOut"][];
+                };
+            };
+        };
+    };
+    create_user_api_v1_users_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdminOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_api_v1_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserAdminOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    telegram_me_api_v1_telegram_finance_me__telegram_chat_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                telegram_chat_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TelegramStaffOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    telegram_create_entry_api_v1_telegram_finance_entries_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TelegramFinanceEntryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    telegram_create_debt_api_v1_telegram_finance_debts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TelegramDebtIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DebtOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    telegram_debt_payment_api_v1_telegram_finance_debts__debt_id__payment_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                debt_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TelegramDebtPaymentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    telegram_report_api_v1_telegram_finance_report_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TelegramReportIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    telegram_order_api_v1_telegram_finance_orders__order_id__get: {
+        parameters: {
+            query: {
+                telegram_chat_id: string;
+            };
+            header?: never;
+            path: {
+                order_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    telegram_approve_api_v1_telegram_finance_entries__entry_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TelegramApprovalIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FinanceEntryOut"];
                 };
             };
             /** @description Validation Error */

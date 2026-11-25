@@ -17,8 +17,17 @@ class Role(StrEnum):
 # Har bir rol avtomatik qaysi scope'larga ega
 ROLE_SCOPES: dict[Role, set[str]] = {
     Role.OWNER: {"*"},
-    Role.MANAGER: {"leads:read", "leads:write", "clients:read", "clients:write", "conversations:read"},
-    Role.ACCOUNTANT: {"finance:read", "finance:write", "leads:read"},
+    Role.MANAGER: {
+        "leads:read",
+        "leads:write",
+        "clients:read",
+        "clients:write",
+        "conversations:read",
+        "orders:read",
+        "orders:write",
+        "finance:read",
+    },
+    Role.ACCOUNTANT: {"finance:read", "finance:write", "orders:read", "leads:read"},
     Role.WORKER: {"tasks:read", "tasks:write"},
 }
 
@@ -35,7 +44,7 @@ class User(Base, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     totp_secret: Mapped[str | None] = mapped_column(String(64), nullable=True)  # 2FA
     totp_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
-    telegram_chat_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    telegram_chat_id: Mapped[str | None] = mapped_column(String(32), unique=True, index=True, nullable=True)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 

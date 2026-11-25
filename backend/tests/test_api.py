@@ -138,3 +138,127 @@ async def test_agent_without_llm_key_uses_fallback(client):
         json={"channel": "telegram", "external_user_id": "1", "text": "salom"},
     )
     assert "menejer" in r.json()["reply"]
+
+
+async def test_finance_approval_debt_order_reports_and_exports(client, owner):
+    await client.post("/api/v1/auth/login", json={"username": "owner", "password": "s3cret-password!"})
+
+    order_response = await client.post(
+        "/api/v1/finance/orders",
+        json={"customer_name": "Test mijoz", "title": "Oshxona", "total_amount": "10000000.00"},
+    )
+    assert order_response.status_code == 201, order_response.text
+    order_id = order_response.json()["id"]
+
+    debt_response = await client.post(
+        "/api/v1/finance/debts",
+        json={
+            "order_id": order_id,
+            "direction": "receivable",
+            "counterparty": "Test mijoz",
+            "amount": "4000000.00",
+        },
+    )
+    assert debt_response.status_code == 201, debt_response.text
+    debt_id = debt_response.json()["id"]
+
+    payment_response = await client.post(
+        "/api/v1/finance/entries",
+        json={
+            "kind": "income",
+            "amount": "1500000.00",
+            "category": "Avans",
+            "order_id": order_id,
+            "debt_id": debt_id,
+        },
+    )
+    assert payment_response.status_code == 201, payment_response.text
+    entry_id = payment_response.json()["id"]
+    assert payment_response.json()["status"] == "pending"
+
+    before = (await client.get("/api/v1/finance/dashboard?period=month")).json()
+    assert float(before["income"]) == 0
+    assert float(before["receivable"]) == 4_000_000
+    assert before["pending_approvals"] == 1
+
+    approved = await client.post(f"/api/v1/finance/entries/{entry_id}/approve")
+    assert approved.status_code == 200, approved.text
+    assert approved.json()["status"] == "approved"
+
+    expense = await client.post(
+        "/api/v1/finance/entries",
+        json={
+            "kind": "expense",
+            "amount": "250000.00",
+            "category": "Material",
+            "order_id": order_id,
+        },
+    )
+    assert expense.status_code == 201, expense.text
+    assert (await client.post(f"/api/v1/finance/entries/{expense.json()['id']}/approve")).status_code == 200
+
+    after = (await client.get("/api/v1/finance/dashboard?period=month")).json()
+    assert float(after["income"]) == 1_500_000
+    assert float(after["expense"]) == 250_000
+    assert float(after["profit"]) == 1_250_000
+    assert float(after["receivable"]) == 2_500_000
+
+    order = (await client.get(f"/api/v1/finance/orders/{order_id}")).json()
+    assert float(order["outstanding"]) == 8_500_000
+    assert float(order["profit"]) == 1_250_000
+
+    report = (await client.get("/api/v1/finance/report?period=month")).json()
+    assert float(report["profit"]) == 1_250_000
+    assert report["points"]
+
+    xlsx = await client.get("/api/v1/finance/export.xlsx?period=month")
+    assert xlsx.status_code == 200
+    assert xlsx.headers["content-type"].startswith("application/vnd.openxmlformats")
+    assert xlsx.content.startswith(b"PK")
+    pdf = await client.get("/api/v1/finance/export.pdf?period=month")
+    assert pdf.status_code == 200
+    assert pdf.headers["content-type"].startswith("application/pdf")
+    assert pdf.content.startswith(b"%PDF")
+
+
+async def test_owner_manages_roles_and_telegram_finance(client, owner):
+    await client.post("/api/v1/auth/login", json={"username": "owner", "password": "s3cret-password!"})
+    created = await client.post(
+        "/api/v1/users",
+        json={
+            "username": "hisobchi",
+            "email": "hisobchi@test.uz",
+            "full_name": "Test hisobchi",
+            "role": "accountant",
+            "password": "secure-password-2026",
+            "telegram_chat_id": "99887766",
+        },
+    )
+    assert created.status_code == 201, created.text
+    assert created.json()["role"] == "accountant"
+    user_id = created.json()["id"]
+    updated = await client.patch(f"/api/v1/users/{user_id}", json={"role": "manager"})
+    assert updated.status_code == 200
+    assert updated.json()["role"] == "manager"
+
+    key = await make_key(["agent:chat"])
+    headers = {"X-API-Key": key}
+    me = await client.get("/api/v1/telegram/finance/me/99887766", headers=headers)
+    assert me.status_code == 200
+    report = await client.post(
+        "/api/v1/telegram/finance/report",
+        headers=headers,
+        json={"telegram_chat_id": "99887766", "period": "day"},
+    )
+    assert report.status_code == 200
+    forbidden = await client.post(
+        "/api/v1/telegram/finance/entries",
+        headers=headers,
+        json={
+            "telegram_chat_id": "99887766",
+            "kind": "income",
+            "amount": "1000.00",
+            "category": "Test",
+        },
+    )
+    assert forbidden.status_code == 403

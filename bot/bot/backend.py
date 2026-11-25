@@ -36,5 +36,71 @@ class BackendClient:
             log.error("backend xatosi: %s", type(e).__name__)
             return FALLBACK
 
+    async def _finance_request(
+        self,
+        method: str,
+        path: str,
+        *,
+        json: dict | None = None,
+        params: dict | None = None,
+    ) -> dict:
+        try:
+            response = await self._client.request(method, path, json=json, params=params)
+            if response.is_error:
+                try:
+                    detail = response.json().get("detail")
+                except ValueError:
+                    detail = None
+                return {"error": detail or "CRM bilan aloqa xatosi"}
+            return response.json()
+        except httpx.HTTPError as exc:
+            log.error("finance backend xatosi: %s", type(exc).__name__)
+            return {"error": "CRM bilan aloqa qilib bo'lmadi"}
+
+    async def finance_me(self, chat_id: int) -> dict:
+        return await self._finance_request("GET", f"/api/v1/telegram/finance/me/{chat_id}")
+
+    async def create_finance_entry(self, chat_id: int, payload: dict) -> dict:
+        return await self._finance_request(
+            "POST",
+            "/api/v1/telegram/finance/entries",
+            json={"telegram_chat_id": str(chat_id), **payload},
+        )
+
+    async def create_debt(self, chat_id: int, payload: dict) -> dict:
+        return await self._finance_request(
+            "POST",
+            "/api/v1/telegram/finance/debts",
+            json={"telegram_chat_id": str(chat_id), **payload},
+        )
+
+    async def create_debt_payment(self, chat_id: int, debt_id: int, payload: dict) -> dict:
+        return await self._finance_request(
+            "POST",
+            f"/api/v1/telegram/finance/debts/{debt_id}/payment",
+            json={"telegram_chat_id": str(chat_id), **payload},
+        )
+
+    async def finance_report(self, chat_id: int, period: str) -> dict:
+        return await self._finance_request(
+            "POST",
+            "/api/v1/telegram/finance/report",
+            json={"telegram_chat_id": str(chat_id), "period": period},
+        )
+
+    async def order_finance(self, chat_id: int, order_id: int) -> dict:
+        return await self._finance_request(
+            "GET",
+            f"/api/v1/telegram/finance/orders/{order_id}",
+            params={"telegram_chat_id": str(chat_id)},
+        )
+
+    async def approve_finance_entry(self, chat_id: int, entry_id: int) -> dict:
+        return await self._finance_request(
+            "POST",
+            f"/api/v1/telegram/finance/entries/{entry_id}/approve",
+            json={"telegram_chat_id": str(chat_id)},
+        )
+
     async def close(self) -> None:
         await self._client.aclose()

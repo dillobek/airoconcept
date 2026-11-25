@@ -9,7 +9,7 @@ javob beradi, ma'lumotlarni CRM'ga saqlaydi, issiq leadlarni menejerga yetkazadi
 airoconcept/
 ├── backend/      Python + FastAPI — API, AI agent, CRM, Meta webhook, worker      (uv)
 ├── bot/          Python + aiogram — mijozlar uchun Telegram bot                    (uv)
-├── admin/        React + Vite — boshqaruv paneli (leadlar, suhbatlar, API kalitlar) (pnpm)
+├── admin/        React + Vite — CRM, moliya, rollar va API kalitlar paneli           (pnpm)
 ├── frontend/     Next.js — ommaviy sayt (landing, zamer formasi, maxfiylik sahifalari) (pnpm)
 ├── deploy/       Caddyfile — HTTPS va domenlar
 ├── docs/         Arxitektura, API, Meta sozlash, xavfsizlik
@@ -26,19 +26,23 @@ Sayt formasi ──► frontend ──API──► backend        └──► m
 Admin panel ──cookie──────────►    backend
 ```
 
-## Hozir nima tayyor (1-bosqich)
+## Hozir nima tayyor
 
 - **Sotuvchi AI agent**: ehtiyojni aniqlaydi, og'riq nuqtasiga ishlaydi, bepul zamerga yozadi, telefon oladi,
   keraksiz suhbatni 2-urinishda yopadi, kerak bo'lsa menejerga o'tkazadi
 - **CRM yadrosi**: mijozlar, kanal identifikatorlari, leadlar (10 bosqich), suhbatlar, xabarlar
 - **Kanallar**: Telegram bot, Instagram DM, Facebook Messenger, sayt formasi
-- **Admin panel**: login (+2FA), leadlar ro'yxati va filtrlar, suhbat tarixi, "men javob beraman / agentga
-  qaytarish", API kalitlarni boshqarish
+- **Moliya**: kirim-chiqim, qarzdorlik va to'lovlar, buyurtma kesimidagi hisob, kunlik/haftalik/oylik
+  hisobotlar, Excel/PDF eksport va owner tasdig'i
+- **Admin panel**: login (+2FA), leadlar, suhbatlar, moliya dashboardi, foydalanuvchi rollari, Telegram
+  chat ID bog'lash va API kalitlarni boshqarish
+- **Telegram hisob-kitob**: `/kirim`, `/chiqim`, `/qarz`, `/tolov`, `/hisobot`, `/buyurtma`, `/tasdiq`
+  buyruqlari; faqat CRM'da bog'langan xodim va uning roli doirasida ishlaydi
 - **Xavfsizlik**: argon2 parollar, httpOnly cookie, 2FA, RBAC rollar, scope'li API kalitlar (faqat hash
   saqlanadi), Meta imzo tekshiruvi, audit log, rate limit, loglarda tokenlarni maskalash
-- **Testlar**: backend 23 ta, bot 3 ta
+- **Testlar**: backend 26 ta, bot 4 ta
 
-Keyingi bosqichlar: Reels avto-post, Meta Ads yoqish/o'chirish, moliya, ishchilar boti, boshqaruvchi agent.
+Keyingi bosqichlar: Reels avto-post, Meta Ads yoqish/o'chirish va boshqaruvchi agent.
 
 ---
 

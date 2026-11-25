@@ -21,6 +21,7 @@ import pytest  # noqa: E402
 
 from app.agents.sales.agent import LLMResponse, ToolCall, sales_agent  # noqa: E402
 from app.core.db import SessionLocal, engine  # noqa: E402
+from app.core.ratelimit import limiter  # noqa: E402
 from app.core.security import generate_api_key, hash_password  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models import ApiKey, Base, User  # noqa: E402
@@ -48,6 +49,7 @@ def tool(tool_name: str, /, **inp) -> LLMResponse:
 
 @pytest.fixture(autouse=True)
 async def db_setup():
+    limiter._storage.reset()
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)

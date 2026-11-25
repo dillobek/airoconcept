@@ -6,10 +6,12 @@ import { RequireAuth } from "./auth";
 import { Layout } from "./components/Layout";
 import "./index.css";
 import { ApiKeys } from "./pages/ApiKeys";
+import { Finance } from "./pages/Finance";
 import { LeadDetail } from "./pages/LeadDetail";
 import { Leads } from "./pages/Leads";
 import { Login } from "./pages/Login";
 import { Security } from "./pages/Security";
+import { Users } from "./pages/Users";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { refetchOnWindowFocus: true } } });
 
@@ -28,6 +30,8 @@ createRoot(document.getElementById("root")!).render(
           >
             <Route path="/leads" element={<Leads />} />
             <Route path="/leads/:id" element={<LeadDetail />} />
+            <Route path="/finance" element={<Finance />} />
+            <Route path="/users" element={<Users />} />
             <Route path="/api-keys" element={<ApiKeys />} />
             <Route path="/security" element={<Security />} />
           </Route>

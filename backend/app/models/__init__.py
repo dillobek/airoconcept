@@ -10,6 +10,16 @@ from app.models.crm import (
     LeadTemperature,
     Message,
 )
+from app.models.finance import (
+    ApprovalStatus,
+    Debt,
+    DebtDirection,
+    DebtStatus,
+    EntryKind,
+    FinanceEntry,
+    Order,
+    OrderStatus,
+)
 from app.models.user import ROLE_SCOPES, ApiKey, AuditLog, Role, User
 
 __all__ = [
@@ -28,4 +38,12 @@ __all__ = [
     "ConversationStatus",
     "Message",
     "Channel",
+    "Order",
+    "OrderStatus",
+    "FinanceEntry",
+    "EntryKind",
+    "ApprovalStatus",
+    "Debt",
+    "DebtDirection",
+    "DebtStatus",
 ]
