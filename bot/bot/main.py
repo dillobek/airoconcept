@@ -6,14 +6,16 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.exceptions import TelegramRetryAfter
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiogram.types import MenuButtonWebApp, WebAppInfo
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 
 from bot.backend import BackendClient
 from bot.config import settings
 from bot.handlers import router
 from bot.middlewares import ThrottleMiddleware
+
+log = logging.getLogger(__name__)
 
 
 def build() -> tuple[Bot, Dispatcher, BackendClient]:
@@ -58,7 +60,7 @@ def run_webhook() -> None:
                 )
                 break
             except TelegramRetryAfter as exc:
-                logging.warning("Telegram webhook limiti: %s soniyadan keyin qayta urinish", exc.retry_after)
+                log.warning("Telegram webhook limiti: %s soniyadan keyin qayta urinish", exc.retry_after)
                 await asyncio.sleep(exc.retry_after + 1)
         await configure_webapp(bot)
 
