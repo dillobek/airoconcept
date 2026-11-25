@@ -18,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
             <Link href="/" aria-label="AiroConcept bosh sahifa"><BrandLogo /></Link>
             <nav className="flex items-center gap-6 text-sm">
+              <Link href="/studio" className="font-semibold text-brand-deep hover:text-wood">AIRO Studio</Link>
               <a href="/#xizmatlar" className="hover:text-wood">Xizmatlar</a>
               <a href="/#nega-biz" className="hover:text-wood">Nega biz</a>
               <a href="/#zamer" className="rounded-full bg-walnut px-4 py-2 text-white hover:bg-brand-ink">Bepul zamer</a>

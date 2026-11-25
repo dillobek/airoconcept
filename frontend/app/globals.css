@@ -19,3 +19,7 @@ html {
   background: #bfe9e2;
   color: #064f48;
 }
+
+body:has(.studio-page) footer {
+  margin-top: 0;
+}

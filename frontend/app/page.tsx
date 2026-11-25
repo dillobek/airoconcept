@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LeadForm } from "@/components/LeadForm";
 
 const SERVICES = [
@@ -29,9 +30,14 @@ export default function Home() {
             <p className="mt-5 text-lg text-stone-600">
               Oshxona, shkaf va garderoblar. Bepul zamer, 3D dizayn va narxi shartnomada qat'iy belgilanadi.
             </p>
-            <a href="#zamer" className="mt-8 inline-block rounded-full bg-walnut px-7 py-3.5 text-white hover:bg-brand-ink">
-              Bepul zamerga yozilish
-            </a>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/studio" className="inline-block rounded-full bg-walnut px-7 py-3.5 font-semibold text-white hover:bg-brand-ink">
+                Xonamni jihozlash
+              </Link>
+              <a href="#zamer" className="inline-block rounded-full border border-brand px-7 py-3.5 font-semibold text-brand-deep hover:bg-brand-soft">
+                Bepul zamer
+              </a>
+            </div>
           </div>
           <div className="flex items-center">
             <div className="grid w-full grid-cols-2 gap-4">
