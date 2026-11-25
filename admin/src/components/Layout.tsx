@@ -18,6 +18,7 @@ export function Layout() {
           {me?.role === "owner" && <NavLink to="/api-keys" className={link}>API kalitlar</NavLink>}
           <NavLink to="/security" className={link}>Xavfsizlik (2FA)</NavLink>
         </nav>
+        <button onClick={logout} className="ml-2 shrink-0 px-2 text-xs text-stone-300 underline lg:hidden">Chiqish</button>
         <div className="hidden px-3 text-xs text-stone-400 lg:mt-auto lg:block">
           <div className="text-stone-200">{me?.full_name}</div>
           <div>{me?.role}</div>
