@@ -4,8 +4,8 @@ export function Button({ className = "", variant = "primary", ...props }: Button
   variant?: "primary" | "ghost" | "danger";
 }) {
   const styles = {
-    primary: "bg-walnut text-white hover:bg-stone-800",
-    ghost: "bg-white border border-stone-300 hover:bg-stone-100",
+    primary: "bg-walnut text-white hover:bg-brand-ink",
+    ghost: "bg-white border border-brand/20 hover:bg-brand-soft",
     danger: "bg-red-700 text-white hover:bg-red-800",
   }[variant];
   return (

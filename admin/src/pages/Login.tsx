@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { errorText, type User } from "../api/client";
 import { Button, Card, ErrorBox, Input } from "../components/ui";
+import { BrandLogo } from "../components/BrandLogo";
 
 export function Login() {
   const [username, setUsername] = useState("");
@@ -38,9 +39,9 @@ export function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-walnut p-4">
-      <Card className="w-full max-w-sm">
-        <h1 className="mb-1 text-xl font-semibold">AiroConcept</h1>
+    <div className="flex min-h-screen items-center justify-center bg-brand-deep p-4">
+      <Card className="w-full max-w-sm border-brand/20 shadow-xl shadow-brand-ink/15">
+        <BrandLogo light={false} className="mb-5" />
         <p className="mb-6 text-sm text-stone-500">Boshqaruv paneliga kirish</p>
         <form onSubmit={submit} className="space-y-3">
           <Input placeholder="Username" autoComplete="username" value={username} onChange={(e) => setUsername(e.target.value)} required />

@@ -45,7 +45,7 @@ export function LeadForm() {
       {/* Botlar uchun tuzoq: odam bu maydonni ko'rmaydi va to'ldirmaydi */}
       <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       {state === "error" && <p className="text-sm text-red-700">{error}</p>}
-      <button disabled={state === "sending"} className="w-full rounded-xl bg-walnut py-3.5 text-white hover:bg-stone-800 disabled:opacity-60">
+      <button disabled={state === "sending"} className="w-full rounded-xl bg-walnut py-3.5 text-white hover:bg-brand-ink disabled:opacity-60">
         {state === "sending" ? "Yuborilmoqda…" : "Zamerga yozilish"}
       </button>
       <p className="text-xs text-stone-500">Yuborish orqali <a href="/privacy" className="underline">maxfiylik siyosati</a>ga rozilik bildirasiz.</p>

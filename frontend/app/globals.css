@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-wood: #b5835a;
-  --color-walnut: #2b1d14;
-  --color-moss: #3f6b52;
-  --color-sand: #f3efea;
+  --color-brand: #159b8c;
+  --color-brand-deep: #0b7067;
+  --color-brand-ink: #075850;
+  --color-brand-soft: #e7f6f3;
+  --color-wood: #159b8c;
+  --color-walnut: #0b7067;
+  --color-moss: #0b7067;
+  --color-sand: #effaf8;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+::selection {
+  background: #bfe9e2;
+  color: #064f48;
 }

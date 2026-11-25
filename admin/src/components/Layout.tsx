@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router";
 import { useLogout, useMe } from "../auth";
+import { BrandLogo } from "./BrandLogo";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   `block whitespace-nowrap rounded-lg px-3 py-2 text-sm ${isActive ? "bg-white/10 text-white" : "text-stone-300 hover:text-white"}`;
@@ -9,8 +10,8 @@ export function Layout() {
   const logout = useLogout();
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      <aside className="flex bg-walnut p-4 lg:min-h-screen lg:w-60 lg:flex-col">
-        <div className="mr-4 shrink-0 px-3 py-2 text-lg font-semibold text-white lg:mb-6 lg:mr-0">AiroConcept</div>
+      <aside className="flex bg-walnut p-4 shadow-[inset_-1px_0_0_rgba(255,255,255,0.12)] lg:min-h-screen lg:w-60 lg:flex-col">
+        <BrandLogo className="mr-4 shrink-0 px-1 py-1 lg:mb-6 lg:mr-0" />
         <nav className="flex flex-1 gap-1 overflow-x-auto lg:block lg:space-y-1 lg:overflow-visible">
           <NavLink to="/leads" className={link}>Leadlar</NavLink>
           {me?.role !== "worker" && <NavLink to="/finance" className={link}>Moliya</NavLink>}

@@ -29,7 +29,7 @@ export default function Home() {
             <p className="mt-5 text-lg text-stone-600">
               Oshxona, shkaf va garderoblar. Bepul zamer, 3D dizayn va narxi shartnomada qat'iy belgilanadi.
             </p>
-            <a href="#zamer" className="mt-8 inline-block rounded-full bg-walnut px-7 py-3.5 text-white hover:bg-stone-800">
+            <a href="#zamer" className="mt-8 inline-block rounded-full bg-walnut px-7 py-3.5 text-white hover:bg-brand-ink">
               Bepul zamerga yozilish
             </a>
           </div>
