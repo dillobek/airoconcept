@@ -17,4 +17,4 @@ ENV NODE_ENV=production
 COPY --from=build --chown=node:node /out /app
 USER node
 EXPOSE 4000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/main.js"]
