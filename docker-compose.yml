@@ -60,7 +60,7 @@ services:
       postgres: { condition: service_healthy }
       redis: { condition: service_started }
     ports:
-      - "127.0.0.1:4000:4000"
+      - "127.0.0.1:4400:4000"
     security_opt: ["no-new-privileges:true"]
 
   bot:
@@ -84,7 +84,7 @@ services:
     restart: unless-stopped
     depends_on: [api]
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:4401:3000"
     security_opt: ["no-new-privileges:true"]
 
   admin:
@@ -97,7 +97,7 @@ services:
     restart: unless-stopped
     depends_on: [api]
     ports:
-      - "127.0.0.1:3001:3001"
+      - "127.0.0.1:4402:3001"
     security_opt: ["no-new-privileges:true"]
 
 volumes:
