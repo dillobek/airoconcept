@@ -95,7 +95,7 @@ services:
     restart: unless-stopped
     depends_on: [api]
     ports:
-      - "127.0.0.1:4402:3001"
+      - "127.0.0.1:4402:3000"
     security_opt: ["no-new-privileges:true"]
 
 volumes:
