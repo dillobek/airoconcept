@@ -6,15 +6,14 @@ COPY . .
 RUN pnpm install --frozen-lockfile \
  && pnpm --filter @ip/core build \
  && pnpm --filter @ip/api prisma:generate \
- && pnpm --filter @ip/api build \
- && pnpm deploy --filter @ip/api --prod /out \
- && cp -r apps/api/dist /out/dist \
- && cp -r apps/api/prisma /out/prisma
+ && pnpm --filter @ip/api build
 
 FROM node:22-alpine
-WORKDIR /app
+WORKDIR /repo/apps/api
 ENV NODE_ENV=production
-COPY --from=build --chown=node:node /out /app
+# pnpm workspace symlinks resolve through the repository-level store.  Copy the
+# built workspace intact so Nest's runtime dependencies remain available.
+COPY --from=build --chown=node:node /repo /repo
 USER node
 EXPOSE 4000
 CMD ["sh", "-c", "npx prisma db push --skip-generate && node dist/main.js"]
