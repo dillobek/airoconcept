@@ -39,8 +39,6 @@ services:
     restart: unless-stopped
     environment:
       INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN}
-    ports:
-      - "127.0.0.1:8000:8000"
     read_only: true
     tmpfs: ["/tmp"]
     security_opt: ["no-new-privileges:true"]
