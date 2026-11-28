@@ -1,110 +1,86 @@
-# Serverda ishga tushirish:  docker compose up -d --build
-# Har bir servisning .env fayli o'z papkasida turadi (backend/.env, bot/.env, frontend/.env).
-# Postgres va Redis tashqariga OCHILMAYDI — faqat ichki tarmoqda.
-
+# Ishlab chiqish va kichik ishlab chiqarish muhiti uchun.
+# Ma'lumotlar bazasi, Redis va MinIO portlari faqat 127.0.0.1 ga ochiladi —
+# tashqi dunyoga faqat reverse proxy (nginx/caddy, HTTPS) orqali api/web/admin chiqadi.
 services:
   postgres:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: airo
-      POSTGRES_USER: airo
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env da yo'q}
-    volumes: [pgdata:/var/lib/postgresql/data]
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U airo -d airo"]
-      interval: 5s
-      retries: 10
-    networks: [internal]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD .env da yo'q}"]
-    volumes: [redisdata:/data]
-    networks: [internal]
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    ports:
+      - "127.0.0.1:6379:6379"
 
-  backend:
-    build: ./backend
+  minio:
+    image: minio/minio:latest
     restart: unless-stopped
-    env_file: ./backend/.env
+    command: server /data --console-address ":9001"
     environment:
-      DATABASE_URL: postgresql+asyncpg://airo:${POSTGRES_PASSWORD}@postgres:5432/airo
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
+    volumes:
+      - miniodata:/data
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+
+  plan-service:
+    build: ./services/plan-recognition
+    restart: unless-stopped
+    environment:
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN}
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      S3_ENDPOINT: http://minio:9000
+      PLAN_SERVICE_URL: http://plan-service:8000
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_started }
-    ports: ["127.0.0.1:4801:8000"]
-    networks: [internal]
-
-  migrate:
-    build: ./backend
-    profiles: ["tools"]
-    env_file: ./backend/.env
-    environment:
-      DATABASE_URL: postgresql+asyncpg://airo:${POSTGRES_PASSWORD}@postgres:5432/airo
-    command: ["alembic", "upgrade", "head"]
-    depends_on:
-      postgres: { condition: service_healthy }
-    networks: [internal]
-    restart: "no"
-
-  worker:
-    build: ./backend
-    restart: unless-stopped
-    env_file: ./backend/.env
-    environment:
-      DATABASE_URL: postgresql+asyncpg://airo:${POSTGRES_PASSWORD}@postgres:5432/airo
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
-    command: ["arq", "app.workers.worker.WorkerSettings"]
-    depends_on: [backend]
-    networks: [internal]
+    ports:
+      - "127.0.0.1:4000:4000"
+    security_opt: ["no-new-privileges:true"]
 
   bot:
-    build: ./bot
+    build:
+      context: .
+      dockerfile: apps/bot/Dockerfile
     restart: unless-stopped
-    env_file: ./bot/.env
+    env_file: .env
     environment:
-      BACKEND_URL: http://backend:8000
-    depends_on: [backend]
-    ports: ["127.0.0.1:4803:8081"]
-    profiles: ["bot"]
-    networks: [internal]
-
-  admin:
-    build: ./admin
-    restart: unless-stopped
-    ports: ["127.0.0.1:4802:80"]
-    networks: [internal]
-
-  frontend:
-    build: ./frontend
-    restart: unless-stopped
-    env_file: ./frontend/.env
-    environment:
-      BACKEND_URL: http://backend:8000
-    depends_on: [backend]
-    ports: ["127.0.0.1:4800:3000"]
-    networks: [internal]
-
-  # Yagona tashqi kirish nuqtasi: HTTPS sertifikatlarini avtomatik oladi
-  caddy:
-    image: caddy:2-alpine
-    restart: unless-stopped
-    ports: ["80:80", "443:443"]
-    environment:
-      DOMAIN: ${DOMAIN:?DOMAIN .env da yo'q}
-    volumes:
-      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddydata:/data
-    depends_on: [backend, admin, frontend]
-    profiles: ["caddy"]
-    networks: [internal]
+      BOT_API_URL: http://api:4000
+    depends_on: [api]
+    security_opt: ["no-new-privileges:true"]
 
 volumes:
   pgdata:
   redisdata:
-  caddydata:
-
-networks:
-  internal:
+  miniodata:

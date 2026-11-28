@@ -1,0 +1,48 @@
+{
+  "name": "@ip/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tashqi kutubxonasiz biznes mantiq: pul, smeta, buyurtma holatlari, avtomatik qoidalar, OTP, bot parseri",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./money": {
+      "types": "./dist/money.d.ts",
+      "default": "./dist/money.js"
+    },
+    "./scene": {
+      "types": "./dist/scene.d.ts",
+      "default": "./dist/scene.js"
+    },
+    "./order-state": {
+      "types": "./dist/order-state.d.ts",
+      "default": "./dist/order-state.js"
+    },
+    "./estimate": {
+      "types": "./dist/estimate.d.ts",
+      "default": "./dist/estimate.js"
+    },
+    "./calculators": {
+      "types": "./dist/calculators.d.ts",
+      "default": "./dist/calculators.js"
+    },
+    "./phone": {
+      "types": "./dist/phone.d.ts",
+      "default": "./dist/phone.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

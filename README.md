@@ -1,154 +1,83 @@
-# AiroConcept — mebel biznesi uchun AI agent tizimi
+# Interyer va mebel platformasi — MVP-1 poydevori
 
-Buyurtma asosida mebel yasaydigan biznes uchun: Instagram, Facebook va Telegram'dagi mijozlarga AI sotuvchi
-javob beradi, ma'lumotlarni CRM'ga saqlaydi, issiq leadlarni menejerga yetkazadi.
+Karobka uylarni mebel bilan jihozlash va interyer dizayn kompaniyasi uchun: backend, veb-sayt, CRM, Telegram hisob-kitob boti va chizmani tanish servisi. Mobil ilova bu repozitoriyda yo'q — u shu API'ga ulanadi.
 
-## Papkalar tuzilmasi
+## Tarkib
 
-```
-airoconcept/
-├── backend/      Python + FastAPI — API, AI agent, CRM, Meta webhook, worker      (uv)
-├── bot/          Python + aiogram — mijozlar uchun Telegram bot                    (uv)
-├── admin/        React + Vite — CRM, moliya, rollar va API kalitlar paneli           (pnpm)
-├── frontend/     Next.js — ommaviy sayt (landing, zamer formasi, maxfiylik sahifalari) (pnpm)
-├── deploy/       Caddyfile — HTTPS va domenlar
-├── docs/         Arxitektura, API, Meta sozlash, xavfsizlik
-└── docker-compose.yml
-```
+| Papka | Nima | Texnologiya | Port |
+| --- | --- | --- | --- |
+| `packages/core` | Umumiy biznes mantiq: pul, smeta, buyurtma holatlari, avtomatik qoidalar, OTP, bot parseri, kalkulyatorlar, 3D sahna tekshiruvi | TypeScript (kutubxonasiz) | — |
+| `apps/api` | Backend: kirish (SMS-OTP), katalog, loyiha va 3D sahna, buyurtma, smeta, vazifalar, avtomatlashtirish, to'lovlar, moliya, fayllar, audit | NestJS, PostgreSQL (Prisma), Redis (BullMQ) | 4000 |
+| `apps/web` | Mijoz sayti: bosh sahifa, katalog, kirish, 3D studiya, buyurtma, loyihalarim | Next.js 15, React Three Fiber | 3000 |
+| `apps/admin` | CRM: buyurtmalar kanbani, buyurtma kartasi, smeta, vazifalar, katalog, moliya, xodimlar, avtomatik qoidalar | Next.js 15 | 3001 |
+| `apps/bot` | Telegram hisob-kitob boti: kirim-chiqim matn bilan, kassa, qarzlar, loyiha foydasi, tasdiq, kalkulyator, kunlik hisobot | grammY | — |
+| `services/plan-recognition` | DXF chizmadan xonalarni ajratish | Python, FastAPI, ezdxf | 8000 |
 
-Har bir qism mustaqil: o'z `.env.example`, `Dockerfile` va bog'liqliklari bor. Ular bir-biri bilan faqat
-**backend API** orqali gaplashadi (bot va sayt — API kalit bilan, admin — sessiya cookie bilan).
+## Ishga tushirish (development)
 
-```
-Instagram / Messenger ──webhook──► backend ──► AI agent ──► CRM (PostgreSQL)
-Telegram ──► bot ──API kalit──►    backend        │
-Sayt formasi ──► frontend ──API──► backend        └──► menejerga Telegram xabar
-Admin panel ──cookie──────────►    backend
-```
+Talablar: Node.js 22+, pnpm 9, Docker.
 
-## Hozir nima tayyor
-
-- **Sotuvchi AI agent**: ehtiyojni aniqlaydi, og'riq nuqtasiga ishlaydi, bepul zamerga yozadi, telefon oladi,
-  keraksiz suhbatni 2-urinishda yopadi, kerak bo'lsa menejerga o'tkazadi
-- **CRM yadrosi**: mijozlar, kanal identifikatorlari, leadlar (10 bosqich), suhbatlar, xabarlar
-- **Kanallar**: Telegram bot, Instagram DM, Facebook Messenger, sayt formasi
-- **Moliya**: kirim-chiqim, qarzdorlik va to'lovlar, buyurtma kesimidagi hisob, kunlik/haftalik/oylik
-  hisobotlar, Excel/PDF eksport va owner tasdig'i
-- **Admin panel**: login (+2FA), leadlar, suhbatlar, moliya dashboardi, foydalanuvchi rollari, Telegram
-  chat ID bog'lash va API kalitlarni boshqarish
-- **Telegram hisob-kitob**: `/kirim`, `/chiqim`, `/qarz`, `/tolov`, `/hisobot`, `/buyurtma`, `/tasdiq`
-  buyruqlari; faqat CRM'da bog'langan xodim va uning roli doirasida ishlaydi
-- **Xavfsizlik**: argon2 parollar, httpOnly cookie, 2FA, RBAC rollar, scope'li API kalitlar (faqat hash
-  saqlanadi), Meta imzo tekshiruvi, audit log, rate limit, loglarda tokenlarni maskalash
-- **Testlar**: backend 26 ta, bot 4 ta
-
-Keyingi bosqichlar: Reels avto-post, Meta Ads yoqish/o'chirish va boshqaruvchi agent.
-
----
-
-## Kompyuterda ishga tushirish (Windows, PowerShell)
-
-Kerak bo'ladi: [uv](https://docs.astral.sh/uv/), Node.js 22+, Docker Desktop (Postgres va Redis uchun).
-
-```powershell
-# 1. uv va pnpm o'rnatish (bir marta)
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-corepack enable
-
-# 2. Postgres va Redis (faqat lokal test uchun)
-docker run -d --name airo-pg -e POSTGRES_USER=airo -e POSTGRES_PASSWORD=airo -e POSTGRES_DB=airo -p 5432:5432 postgres:17-alpine
-docker run -d --name airo-redis -p 6379:6379 redis:7-alpine
-```
-
-### Backend
-```powershell
-cd $HOME\Desktop\airoconcept\backend
-uv sync
-Copy-Item .env.example .env
-uv run python -m app.cli gen-keys        # chiqqan qiymatlarni .env ga qo'ying
-uv run alembic upgrade head
-uv run python -m app.cli create-user --email owner@airoconcept.uz --username admin --name "Ega" --role owner
-uv run uvicorn app.main:app --reload     # http://localhost:8000/docs
-```
-Ikkinchi oynada worker (Instagram/Messenger xabarlari uchun):
-```powershell
-cd $HOME\Desktop\airoconcept\backend
-uv run arq app.workers.worker.WorkerSettings
-```
-Testlar: `uv run pytest`
-
-### Telegram bot
-```powershell
-cd $HOME\Desktop\airoconcept\backend
-uv run python -m app.cli create-api-key --name "Telegram bot" --scopes agent:chat   # kalitni nusxalang
-
-cd ..\bot
-uv sync
-Copy-Item .env.example .env          # BOT_TOKEN va BACKEND_API_KEY ni to'ldiring
-uv run python -m bot.main
-```
-
-### Admin panel
-```powershell
-cd $HOME\Desktop\airoconcept\admin
-pnpm install
-pnpm dev                             # http://localhost:5173
-```
-Backend API o'zgarsa, tiplarni yangilash:
-```powershell
-cd ..\backend; uv run python -m app.cli export-openapi > ..\admin\src\api\openapi.json
-cd ..\admin;   pnpm gen:api
-```
-
-### Sayt
-```powershell
-cd $HOME\Desktop\airoconcept\backend
-uv run python -m app.cli create-api-key --name "Sayt" --scopes leads:write
-
-cd ..\frontend
-pnpm install
-Copy-Item .env.example .env.local    # BACKEND_API_KEY ni to'ldiring
-pnpm dev                             # http://localhost:3000
-```
-
----
-
-## Serverga joylash (Linux VPS)
-
-1. DNS: `DOMAIN`, `www`, `api`, `my` va `web` subdomenlarini server IP manziliga yo'naltiring.
-2. Serverda:
 ```bash
-git clone <repo> airoconcept && cd airoconcept
-cp .env.example .env                       # DOMAIN, POSTGRES_PASSWORD, REDIS_PASSWORD
-cp backend/.env.example backend/.env       # ENV=production, DOCS_ENABLED=false, COOKIE_SECURE=true + kalitlar
-cp bot/.env.example bot/.env               # BOT_MODE=webhook, WEBHOOK_BASE_URL=https://bot.DOMAIN
-cp frontend/.env.example frontend/.env
-docker compose up -d --build
-docker compose run --rm backend python -m app.cli create-user --email owner@... --username admin --name "Ega" --role owner
-docker compose run --rm backend python -m app.cli create-api-key --name "Telegram bot" --scopes agent:chat
-docker compose run --rm backend python -m app.cli create-api-key --name "Sayt" --scopes leads:write
-# kalitlarni bot/.env va frontend/.env ga yozib: docker compose up -d
+cp .env.example .env            # va barcha CHANGE_ME qiymatlarni almashtiring
+docker compose up -d postgres redis minio
+pnpm install
+pnpm --filter @ip/core build
+pnpm --filter @ip/api prisma:generate
+pnpm --filter @ip/api prisma:migrate:dev --name init
+OWNER_PHONE=+998901234567 OWNER_NAME="Ismingiz" pnpm db:seed
+pnpm dev                        # api :4000, web :3000, admin :3001, bot
 ```
-3. Meta webhook: `https://api.DOMAIN/webhooks/meta` — batafsil [docs/META_SETUP.md](docs/META_SETUP.md).
 
-### GitHub'dan avtomatik yangilash
+`pnpm install` birinchi marta `pnpm-lock.yaml` yaratadi — uni git'ga qo'shing: Docker build aynan shu faylga qarab o'rnatadi (`--frozen-lockfile`).
 
-`deploy/update.sh` yangi `main` commitini tekshiradi, barcha image'larni qayta build qiladi, migratsiyalarni
-ishga tushiradi va servislarni yangilaydi. `deploy/systemd/` ichidagi timer uni har daqiqada ishga tushiradi.
-Server tashqi Nginx ishlatsa, `deploy/nginx/airoconcept.uz.conf` namunasi frontendni `4800`, API'ni `4801`
-va admin panelni `4802` portidan proxy qiladi. Caddy va Telegram bot standart holatda profilga ajratilgan:
-ularni mos ravishda `docker compose --profile caddy up -d` va `docker compose --profile bot up -d` bilan
-yoqish mumkin.
+MinIO konsolida (`http://127.0.0.1:9001`) `interyer` bucket yarating va `public/` papkasini ochiq o'qishga ruxsat bering (mahsulot rasmlari va 3D modellar uchun). `private/` yopiq qoladi.
 
-## Hujjatlar
+Development rejimida `SMS_PROVIDER=console` — SMS kod API logida chiqadi.
 
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — tizim qanday tuzilgan, yangi kanal/modul qo'shish
-- [docs/API.md](docs/API.md) — tashqi dasturlar uchun API va kalitlar
-- [docs/META_SETUP.md](docs/META_SETUP.md) — Meta App, System User token, webhook
-- [docs/SECURITY.md](docs/SECURITY.md) — xavfsizlik choralari va tekshiruv ro'yxati
+## Testlar
 
-## Agentni biznesga moslash
+```bash
+pnpm --filter @ip/core test     # pul, OTP, holatlar, smeta, qoidalar, parser, kalkulyator, sahna — 9 ta test
+pnpm --filter @ip/bot test      # tasdiqlash navbati, tezlik cheklovi — 4 ta test
+cd services/plan-recognition && python -m unittest   # geometriya — 5 ta test
+```
 
-`backend/app/agents/sales/knowledge.json` — narxlar, materiallar, kafolat, e'tirozlarga javoblar, portfolio
-havolalari. **Ishga tushirishdan oldin biznes egasi bilan birga to'ldiring** (hozir namunaviy qiymatlar).
-Suhbat uslubi va qoidalar: `backend/app/agents/sales/prompt.py`.
+## Asosiy oqim
+
+1. Mijoz saytda SMS kod bilan kiradi va xona yaratadi (o'lcham yoki DXF chizma).
+2. 3D studiyada katalogdagi mebellarni qo'yadi, devor va polni tanlaydi. Narx serverda hisoblanadi.
+3. Buyurtma beradi. Qoidalar o'lchovchini avtomatik tayinlaydi, mijozga SMS va xodimga Telegram xabar yuboradi.
+4. O'lchovdan keyin menejer CRM'da smeta yaratadi. Mijoz yoki menejer uni tasdiqlaydi, keyin shartnoma bosqichi keladi.
+5. Payme yoki Click orqali avans tushadi. Buyurtma avtomatik "Avans to'landi" ga o'tadi, sex va ta'minotga vazifa ketadi.
+6. Ombor, yetkazish va o'rnatish bosqichlaridan keyin mijoz aktni imzolaydi va qolgan to'lov yopiladi.
+7. Har bir xarajat botga yoziladi, shuning uchun har bir buyurtmaning sof foydasi `/loyiha 1042` bilan ko'rinadi.
+
+Koordinator ishini `packages/core/src/automation.ts` dagi qoidalar bajaradi. Rahbar ularni CRM'dagi "Avtomatik qoidalar" bo'limida yoqadi, o'chiradi va kechikishini sozlaydi. Har 10 daqiqada muddati o'tgan vazifalar rahbarga ko'tariladi.
+
+## API qisqacha
+
+| Marshrut | Kim |
+| --- | --- |
+| `POST /auth/otp/request`, `/auth/otp/verify`, `/auth/refresh`, `/auth/logout`, `GET /auth/me` | hamma |
+| `GET /catalog/products`, `/catalog/products/:slug`, `/catalog/categories`, `/catalog/materials` | ochiq |
+| `POST/PATCH /catalog/admin/...` | rahbar, menejer, ta'minot |
+| `POST /projects`, `GET /projects/mine`, `PUT /projects/:id/rooms/:roomId/scene`, `GET /projects/:id/estimate-preview` | mijoz (o'ziniki), xodim |
+| `POST /orders`, `GET /orders`, `GET /orders/:id`, `POST /orders/:id/transition` | rolga qarab |
+| `POST /orders/:id/estimates`, `/estimates/:v/approve`, `/acceptance`, `PATCH /orders/:id/assign` | rolga qarab |
+| `GET/PATCH /tasks` | xodimlar |
+| `/finance/*` (CRM), `/internal/finance/*` (bot) | rahbar, buxgalter, menejer, prorab, ta'minot |
+| `POST /payments/payme`, `/payments/click/prepare`, `/payments/click/complete` | to'lov tizimlari |
+| `POST /files/uploads`, `GET /files/:id/url` | kirgan foydalanuvchi |
+| `GET/PATCH /automation/rules`, `/staff` | rahbar |
+
+Mobil ilova `X-Client: mobile` sarlavhasi bilan kiradi va tokenlarni javob tanasida oladi (`Authorization: Bearer`). Sayt va CRM httpOnly cookie ishlatadi.
+
+## Hali qilinmagan (keyingi bosqichlar)
+
+- Rasm va PDF rejalarni tanish (neyron tarmoq), butun uyni 3D'da ko'rish (MVP-2)
+- Dizayn moduli: brif, konsepsiya, render tasdiqlash (MVP-2)
+- Xodimlar mobil ilovasi, push xabarlar (FCM)
+- Ishlab chiqarish va ombor, ta'mir moduli, telefoniya, analitika, AR, real render (V3)
+- Chek suratidan summani o'qish (OCR) va maosh/sdelka (bot v2)
+
+Xavfsizlik: [SECURITY.md](SECURITY.md).

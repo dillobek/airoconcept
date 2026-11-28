@@ -1,0 +1,468 @@
+// Ma'lumotlar modeli. Pul — BigInt, tiyinda (1 so'm = 100 tiyin). O'lchamlar — Decimal.
+// Pul yozuvlari o'chirilmaydi: faqat VOID holatiga o'tkaziladi (audit uchun).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  DESIGNER
+  MEASURER
+  SUPPLY
+  PRODUCTION
+  WAREHOUSE
+  DRIVER
+  INSTALLER
+  FOREMAN
+  ACCOUNTANT
+  CLIENT
+}
+
+enum OrderStatus {
+  LEAD
+  PLACED
+  MEASUREMENT_SCHEDULED
+  MEASURED
+  CONTRACT_SIGNED
+  DEPOSIT_PAID
+  IN_PRODUCTION
+  READY
+  DELIVERY_SCHEDULED
+  DELIVERED
+  INSTALLED
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectType {
+  SELF
+  DESIGNER
+}
+
+enum DesignStage {
+  BRIEF
+  MEASURE
+  CONTRACT
+  CONCEPT
+  LAYOUT
+  RENDER
+  DRAWINGS
+  ESTIMATE
+  DONE
+}
+
+enum EstimateStatus {
+  DRAFT
+  APPROVED
+  SUPERSEDED
+}
+
+enum TaskStatus {
+  OPEN
+  DONE
+  CANCELLED
+}
+
+enum ProductionType {
+  READY_MADE
+  CUSTOM
+}
+
+enum PaymentProvider {
+  CASH
+  CARD
+  BANK
+  CLICK
+  PAYME
+  UZUM
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}
+
+enum FinanceKind {
+  INCOME
+  EXPENSE
+}
+
+enum FinanceCategory {
+  MATERIAL
+  FURNITURE
+  TRANSPORT
+  SALARY
+  RENT
+  MARKETING
+  TOOLS
+  CLIENT_PAYMENT
+  OTHER
+}
+
+enum FinanceStatus {
+  CONFIRMED
+  PENDING_APPROVAL
+  REJECTED
+  VOID
+}
+
+enum NotificationChannel {
+  SMS
+  PUSH
+  TELEGRAM
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+model User {
+  id         String   @id @default(cuid())
+  phone      String   @unique
+  name       String
+  role       Role     @default(CLIENT)
+  isActive   Boolean  @default(true)
+  region     String?
+  telegramId BigInt?  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  refreshTokens   RefreshToken[]
+  homes           Home[]
+  projects        Project[]       @relation("ProjectClient")
+  designProjects  Project[]       @relation("ProjectDesigner")
+  orders          Order[]         @relation("OrderClient")
+  managedOrders   Order[]         @relation("OrderManager")
+  measuredOrders  Order[]         @relation("OrderMeasurer")
+  tasks           Task[]
+  financeEntries  FinanceEntry[]  @relation("FinanceCreator")
+  approvedEntries FinanceEntry[]  @relation("FinanceApprover")
+  auditLogs       AuditLog[]
+
+  @@index([role, isActive])
+}
+
+model OtpChallenge {
+  id         String    @id @default(cuid())
+  phone      String
+  codeHash   String
+  purpose    String    @default("login")
+  expiresAt  DateTime
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  ip         String?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, createdAt])
+  @@index([ip, createdAt])
+}
+
+model RefreshToken {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String    @unique
+  familyId    String
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  replacedBy  String?
+  userAgent   String?
+  ip          String?
+  createdAt   DateTime  @default(now())
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model Category {
+  id       String     @id @default(cuid())
+  slug     String     @unique
+  name     String
+  parentId String?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  products Product[]
+  sort     Int        @default(0)
+}
+
+model Product {
+  id             String           @id @default(cuid())
+  slug           String           @unique
+  name           String
+  description    String           @default("")
+  categoryId     String
+  category       Category         @relation(fields: [categoryId], references: [id])
+  priceTiyin     BigInt
+  widthCm        Int
+  depthCm        Int
+  heightCm       Int
+  productionType ProductionType   @default(READY_MADE)
+  modelGlbKey    String?
+  modelUsdzKey   String?
+  imageKeys      String[]
+  isPublished    Boolean          @default(false)
+  variants       ProductVariant[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([categoryId, isPublished])
+}
+
+model ProductVariant {
+  id              String  @id @default(cuid())
+  productId       String
+  product         Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name            String
+  colorHex        String?
+  priceDeltaTiyin BigInt  @default(0)
+  modelGlbKey     String?
+}
+
+/// Material (devor bo'yog'i, pol qoplamasi) — m² narxi bilan
+model Material {
+  id            String  @id @default(cuid())
+  kind          String // WALL_PAINT | FLOOR
+  name          String
+  colorHex      String?
+  pricePerM2Tiyin BigInt
+  isPublished   Boolean @default(true)
+}
+
+model Home {
+  id          String    @id @default(cuid())
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id])
+  title       String
+  planFileKey String?
+  planData    Json?
+  rooms       Room[]
+  projects    Project[]
+  createdAt   DateTime  @default(now())
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  homeId    String
+  home      Home     @relation(fields: [homeId], references: [id], onDelete: Cascade)
+  name      String
+  lengthM   Decimal  @db.Decimal(6, 2)
+  widthM    Decimal  @db.Decimal(6, 2)
+  heightM   Decimal  @db.Decimal(5, 2)
+  scene     Json
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id             String       @id @default(cuid())
+  number         Int          @unique @default(autoincrement())
+  type           ProjectType  @default(SELF)
+  clientId       String
+  client         User         @relation("ProjectClient", fields: [clientId], references: [id])
+  homeId         String
+  home           Home         @relation(fields: [homeId], references: [id])
+  designStage    DesignStage?
+  designerId     String?
+  designer       User?        @relation("ProjectDesigner", fields: [designerId], references: [id])
+  lastActivityAt DateTime     @default(now())
+  idleNotifiedAt DateTime?
+  orders         Order[]
+  tasks          Task[]
+  createdAt      DateTime     @default(now())
+
+  @@index([clientId])
+  @@index([lastActivityAt])
+}
+
+model Order {
+  id                 String               @id @default(cuid())
+  number             Int                  @unique @default(autoincrement())
+  projectId          String
+  project            Project              @relation(fields: [projectId], references: [id])
+  clientId           String
+  client             User                 @relation("OrderClient", fields: [clientId], references: [id])
+  status             OrderStatus          @default(PLACED)
+  managerId          String?
+  manager            User?                @relation("OrderManager", fields: [managerId], references: [id])
+  measurerId         String?
+  measurer           User?                @relation("OrderMeasurer", fields: [measurerId], references: [id])
+  measurementAt      DateTime?
+  address            String
+  region             String?
+  acceptanceSignedAt DateTime?
+  cancelledReason    String?
+  history            OrderStatusHistory[]
+  estimates          Estimate[]
+  payments           Payment[]
+  tasks              Task[]
+  financeEntries     FinanceEntry[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@index([status])
+  @@index([clientId])
+  @@index([managerId])
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(cuid())
+  orderId   String
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  from      OrderStatus
+  to        OrderStatus
+  actorId   String?
+  note      String?
+  createdAt DateTime    @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+model Estimate {
+  id            String         @id @default(cuid())
+  orderId       String
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  version       Int
+  status        EstimateStatus @default(DRAFT)
+  lines         Json
+  subtotalTiyin BigInt
+  discountTiyin BigInt
+  totalTiyin    BigInt
+  depositTiyin  BigInt
+  createdById   String
+  approvedAt    DateTime?
+  approvedById  String?
+  createdAt     DateTime       @default(now())
+
+  @@unique([orderId, version])
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  orderId     String?
+  order       Order?     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role        Role
+  assigneeId  String?
+  assignee    User?      @relation(fields: [assigneeId], references: [id])
+  title       String
+  dueAt       DateTime
+  status      TaskStatus @default(OPEN)
+  ruleId      String?
+  escalatedAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+
+  @@index([assigneeId, status])
+  @@index([status, dueAt])
+}
+
+model AutomationRule {
+  id           String   @id
+  name         String
+  enabled      Boolean  @default(true)
+  trigger      String
+  conditions   Json
+  actions      Json
+  delayMinutes Int      @default(0)
+  updatedAt    DateTime @updatedAt
+}
+
+model Notification {
+  id        String              @id @default(cuid())
+  userId    String?
+  phone     String?
+  channel   NotificationChannel
+  template  String
+  payload   Json
+  status    NotificationStatus  @default(QUEUED)
+  error     String?
+  createdAt DateTime            @default(now())
+  sentAt    DateTime?
+
+  @@index([status, createdAt])
+}
+
+model Payment {
+  id             String          @id @default(cuid())
+  /// Click merchant_prepare_id uchun butun son
+  seq            Int             @unique @default(autoincrement())
+  orderId        String?
+  order          Order?          @relation(fields: [orderId], references: [id])
+  provider       PaymentProvider
+  amountTiyin    BigInt
+  status         PaymentStatus   @default(PENDING)
+  externalId     String?
+  providerState  Int?
+  providerTimeMs BigInt?
+  performedAt    DateTime?
+  cancelledAt    DateTime?
+  cancelReason   Int?
+  createdById    String?
+  createdAt      DateTime        @default(now())
+
+  @@unique([provider, externalId])
+  @@index([orderId, status])
+}
+
+model FinanceEntry {
+  id             String          @id @default(cuid())
+  kind           FinanceKind
+  category       FinanceCategory
+  method         PaymentProvider
+  amountTiyin    BigInt
+  orderId        String?
+  order          Order?          @relation(fields: [orderId], references: [id])
+  note           String          @default("")
+  receiptFileKey String?
+  status         FinanceStatus   @default(CONFIRMED)
+  createdById    String
+  createdBy      User            @relation("FinanceCreator", fields: [createdById], references: [id])
+  approvedById   String?
+  approvedBy     User?           @relation("FinanceApprover", fields: [approvedById], references: [id])
+  voidReason     String?
+  occurredAt     DateTime        @default(now())
+  createdAt      DateTime        @default(now())
+  /// Takroriy yuborishdan himoya (bot tugmasi ikki marta bosilsa)
+  idempotencyKey String?         @unique
+
+  @@index([occurredAt])
+  @@index([orderId])
+  @@index([status])
+}
+
+model FileObject {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  ownerId   String
+  mime      String
+  sizeBytes Int
+  purpose   String
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  ip        String?
+  userAgent String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([actorId, createdAt])
+}
