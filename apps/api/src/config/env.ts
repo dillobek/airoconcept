@@ -26,7 +26,7 @@ const schema = z
     JWT_ACCESS_SECRET: secret,
     OTP_PEPPER: secret,
     INTERNAL_SERVICE_TOKEN: secret,
-    SMS_PROVIDER: z.enum(["console", "eskiz"]).default("console"),
+    SMS_PROVIDER: z.enum(["disabled", "console", "eskiz"]).default("disabled"),
     ESKIZ_EMAIL: z.string().optional(),
     ESKIZ_PASSWORD: z.string().optional(),
     ESKIZ_SENDER: z.string().default("4546"),

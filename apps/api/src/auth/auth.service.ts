@@ -5,6 +5,7 @@ import {
   Inject,
   Injectable,
   UnauthorizedException,
+  ServiceUnavailableException,
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -40,6 +41,7 @@ export class AuthService {
    * Cheklovlar: raqamga 60 soniyada 1 ta, soatiga 5 ta; IP dan soatiga 20 ta.
    */
   async requestOtp(rawPhone: string, ip: string): Promise<{ sent: true; resendAfterSeconds: number }> {
+    if (this.env.SMS_PROVIDER === "disabled") throw new ServiceUnavailableException("Telefon orqali kirish hali yoqilmagan");
     const phone = normalizeUzPhone(rawPhone);
     if (!phone) throw new BadRequestException("Telefon raqam noto'g'ri");
     const hourAgo = new Date(Date.now() - 3600_000);

@@ -14,6 +14,7 @@ export class SmsService {
   constructor(@Inject(ENV) private readonly env: Env) {}
 
   async send(phone: string, text: string): Promise<void> {
+    if (this.env.SMS_PROVIDER === "disabled") throw new Error("SMS xizmati yoqilmagan");
     if (this.env.SMS_PROVIDER === "console") {
       // Faqat development: kod konsolga chiqadi
       this.log.warn(`[DEV SMS] ${maskPhone(phone)}: ${text}`);
