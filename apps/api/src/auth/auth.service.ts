@@ -14,6 +14,7 @@ import type { User } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { ENV, type Env } from "../config/env";
 import { SmsService } from "./sms.service";
+import { verifyPassword } from "./password";
 
 export const ACCESS_TTL_SECONDS = 15 * 60;
 export const REFRESH_TTL_SECONDS = 30 * 24 * 3600;
@@ -106,10 +107,21 @@ export class AuthService {
       user = await this.prisma.user.create({ data: { phone, name: cleanName, role: "CLIENT" } });
     }
     if (!user.isActive) throw new UnauthorizedException("Hisob bloklangan");
+    if (user.role !== "CLIENT") throw new UnauthorizedException("CRM xodimlari username va parol bilan kiradi");
 
     const consumed = await this.prisma.otpChallenge.updateMany({ where: { id: challenge.id, consumedAt: null }, data: { consumedAt: new Date() } });
     if (consumed.count === 0) throw new UnauthorizedException("Kod allaqachon ishlatilgan");
 
+    return this.issueTokens(user, randomUUID(), meta);
+  }
+
+  /** CRM xodimlari uchun alohida, username + password orqali kirish. */
+  async loginStaff(username: string, password: string, meta: { ip: string; userAgent: string }): Promise<IssuedTokens> {
+    const normalized = username.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({ where: { username: normalized } });
+    if (!user || user.role === "CLIENT" || !user.isActive || !(await verifyPassword(password, user.passwordHash))) {
+      throw new UnauthorizedException("Username yoki parol noto'g'ri");
+    }
     return this.issueTokens(user, randomUUID(), meta);
   }
 

@@ -6,18 +6,23 @@ import { AuthUser, CurrentUser, Public, Roles, ZodPipe } from "../common/http";
 import { InternalServiceGuard } from "../common/guards";
 import { SkipThrottle } from "@nestjs/throttler";
 import { AuditService } from "../common/audit";
+import { hashPassword } from "../auth/password";
 
 const StaffDto = z.object({
-  phone: z.string().min(9).max(32),
   name: z.string().trim().min(2).max(80),
-  role: z.enum(ROLES).refine((r) => r !== "CLIENT", "xodim roli kerak"),
+  username: z.string().trim().toLowerCase().regex(/^[a-z0-9_.-]{3,40}$/, "Username noto'g'ri"),
+  password: z.string().min(12).max(128),
+  phone: z.string().min(9).max(32).optional(),
+  role: z.enum(ROLES).refine((r) => r !== "CLIENT" && r !== "OWNER", "xodim roli kerak"),
   region: z.string().trim().max(60).optional(),
 });
 const StaffPatch = z.object({
-  role: z.enum(ROLES).optional(),
+  role: z.enum(ROLES).refine((r) => r !== "OWNER", "Rahbar roli o'zgartirilmaydi").optional(),
   isActive: z.boolean().optional(),
   region: z.string().trim().max(60).nullable().optional(),
   name: z.string().trim().min(2).max(80).optional(),
+  username: z.string().trim().toLowerCase().regex(/^[a-z0-9_.-]{3,40}$/, "Username noto'g'ri").optional(),
+  password: z.string().min(12).max(128).optional(),
 });
 const LinkDto = z.object({ phone: z.string().min(9).max(32), telegramUserId: z.string().regex(/^\d{1,20}$/) });
 
@@ -32,19 +37,17 @@ export class StaffController {
     return this.prisma.user.findMany({
       where: { role: r ?? { not: "CLIENT" } },
       orderBy: { name: "asc" },
-      select: { id: true, name: true, phone: true, role: true, region: true, isActive: true, telegramId: false },
+      select: { id: true, name: true, username: true, phone: true, role: true, region: true, isActive: true, telegramId: false },
     });
   }
 
   @Post()
   async create(@CurrentUser() actor: AuthUser, @Body(new ZodPipe(StaffDto)) dto: z.infer<typeof StaffDto>) {
-    const phone = normalizeUzPhone(dto.phone);
-    if (!phone) throw new BadRequestException("Telefon noto'g'ri");
-    const user = await this.prisma.user.upsert({
-      where: { phone },
-      create: { phone, name: dto.name, role: dto.role, region: dto.region ?? null },
-      update: { name: dto.name, role: dto.role, region: dto.region ?? null, isActive: true },
-      select: { id: true, name: true, phone: true, role: true },
+    const phone = dto.phone ? normalizeUzPhone(dto.phone) : null;
+    if (dto.phone && !phone) throw new BadRequestException("Telefon noto'g'ri");
+    const user = await this.prisma.user.create({
+      data: { username: dto.username, passwordHash: await hashPassword(dto.password), phone, name: dto.name, role: dto.role, region: dto.region ?? null },
+      select: { id: true, name: true, username: true, phone: true, role: true },
     });
     await this.audit.record(actor.id, "staff.upsert", "user", user.id, { role: dto.role });
     return user;
@@ -53,8 +56,13 @@ export class StaffController {
   @Patch(":id")
   async update(@CurrentUser() actor: AuthUser, @Param("id", new ZodPipe(z.string().cuid())) id: string, @Body(new ZodPipe(StaffPatch)) dto: z.infer<typeof StaffPatch>) {
     if (id === actor.id && (dto.role || dto.isActive === false)) throw new ForbiddenException("O'z rolingizni o'zgartira olmaysiz");
-    const user = await this.prisma.user.update({ where: { id }, data: dto, select: { id: true, name: true, role: true, isActive: true, region: true } });
-    if (dto.isActive === false || dto.role) {
+    const { password, ...safeDto } = dto;
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { ...safeDto, ...(password ? { passwordHash: await hashPassword(password) } : {}) },
+      select: { id: true, name: true, username: true, role: true, isActive: true, region: true },
+    });
+    if (dto.isActive === false || dto.role || dto.password || dto.username) {
       // Huquq o'zgarsa yoki bloklansa — barcha sessiyalar bekor
       await this.prisma.refreshToken.updateMany({ where: { userId: id, revokedAt: null }, data: { revokedAt: new Date() } });
     }

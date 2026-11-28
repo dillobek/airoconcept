@@ -129,7 +129,11 @@ enum NotificationStatus {
 
 model User {
   id         String   @id @default(cuid())
-  phone      String   @unique
+  /// Mijozlar telefon + OTP bilan kiradi; CRM xodimlari uchun telefon majburiy emas.
+  phone      String?  @unique
+  /// Faqat CRM xodimlari uchun. Harflar kichik ko'rinishda saqlanadi.
+  username   String?  @unique
+  passwordHash String?
   name       String
   role       Role     @default(CLIENT)
   isActive   Boolean  @default(true)

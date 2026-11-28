@@ -1,9 +1,16 @@
 "use client";
 
 import { Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, type ThreeElements, type ThreeEvent } from "@react-three/fiber";
 import { Clone, OrbitControls, useGLTF } from "@react-three/drei";
 import type { RoomScene } from "@ip/core/scene";
+
+// React 19 global JSX namespace'iga React Three Fiber elementlarini bog'laymiz.
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements extends ThreeElements {}
+  }
+}
 
 export interface ItemProduct {
   id: string;
@@ -69,7 +76,7 @@ export default function Room3D({ scene, products, wallColor, floorColor, selecte
               key={it.id}
               position={[it.x, 0, it.z]}
               rotation={[0, (it.rotationDeg * Math.PI) / 180, 0]}
-              onClick={(e) => {
+              onClick={(e: ThreeEvent<MouseEvent>) => {
                 e.stopPropagation();
                 onSelect(it.id);
               }}

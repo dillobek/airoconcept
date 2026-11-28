@@ -15,6 +15,10 @@ const VerifyOtpDto = z.object({
   code: z.string().regex(/^\d{6}$/, "6 xonali kod"),
   name: z.string().trim().min(2).max(80).optional(),
 });
+const StaffLoginDto = z.object({
+  username: z.string().trim().toLowerCase().regex(/^[a-z0-9_.-]{3,40}$/, "Username noto'g'ri"),
+  password: z.string().min(12).max(128),
+});
 const RefreshDto = z.object({ refreshToken: z.string().min(40).max(200).optional() });
 
 /** Mobil ilova tokenlarni javob tanasida oladi (X-Client: mobile); sayt va CRM — faqat httpOnly cookie'da. */
@@ -48,6 +52,19 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.auth.verifyOtp(dto.phone, dto.code, dto.name, this.meta(req));
+    return this.respond(tokens, req, res);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  @Post("staff/login")
+  @HttpCode(200)
+  async staffLogin(
+    @Body(new ZodPipe(StaffLoginDto)) dto: z.infer<typeof StaffLoginDto>,
+    @Req() req: AuthedRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokens = await this.auth.loginStaff(dto.username, dto.password, this.meta(req));
     return this.respond(tokens, req, res);
   }
 

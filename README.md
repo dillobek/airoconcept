@@ -24,7 +24,7 @@ pnpm install
 pnpm --filter @ip/core build
 pnpm --filter @ip/api prisma:generate
 pnpm --filter @ip/api prisma:migrate:dev --name init
-OWNER_PHONE=+998901234567 OWNER_NAME="Ismingiz" pnpm db:seed
+OWNER_NAME="Sohibjon" OWNER_USERNAME=admin OWNER_PASSWORD="kuchli-parol" pnpm db:seed
 pnpm dev                        # api :4000, web :3000, admin :3001, bot
 ```
 

@@ -20,7 +20,7 @@ import type { Role } from "@prisma/client";
 export interface AuthUser {
   id: string;
   role: Role;
-  phone: string;
+  phone: string | null;
 }
 
 export interface AuthedRequest extends Request {

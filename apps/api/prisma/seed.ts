@@ -1,18 +1,25 @@
 /**
  * Boshlang'ich ma'lumotlar: rahbar hisobi, kategoriyalar, materiallar.
- * Ishlatish: OWNER_PHONE=+998901234567 OWNER_NAME="Ism" pnpm db:seed
+ * Ishlatish: OWNER_NAME="Sohibjon" OWNER_USERNAME=admin OWNER_PASSWORD="..." pnpm db:seed
  * Mahsulotlar va 3D modellar CRM orqali qo'shiladi.
  */
 import { PrismaClient } from "@prisma/client";
-import { normalizeUzPhone } from "@ip/core";
+import { hashPassword } from "../src/auth/password";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const phone = normalizeUzPhone(process.env.OWNER_PHONE ?? "");
-  if (!phone) throw new Error("OWNER_PHONE ni to'g'ri kiriting (+998...)");
   const name = (process.env.OWNER_NAME ?? "Rahbar").slice(0, 80);
-  await prisma.user.upsert({ where: { phone }, create: { phone, name, role: "OWNER" }, update: { role: "OWNER", isActive: true } });
+  const username = (process.env.OWNER_USERNAME ?? "admin").trim().toLowerCase();
+  const password = process.env.OWNER_PASSWORD ?? "";
+  if (!/^[a-z0-9_.-]{3,40}$/.test(username)) throw new Error("OWNER_USERNAME noto'g'ri");
+  if (password.length < 12) throw new Error("OWNER_PASSWORD kamida 12 belgidan iborat bo'lishi kerak");
+  const passwordHash = await hashPassword(password);
+  await prisma.user.upsert({
+    where: { username },
+    create: { username, passwordHash, name, role: "OWNER" },
+    update: { name, role: "OWNER", passwordHash, isActive: true },
+  });
 
   const cats = [
     ["divanlar", "Divanlar"], ["kreslolar", "Kreslolar"], ["stollar", "Stollar"], ["kravatlar", "Kravatlar"],
@@ -36,7 +43,7 @@ async function main() {
     });
   }
   // eslint-disable-next-line no-console
-  console.log("Seed tayyor. Rahbar:", phone);
+  console.log("Seed tayyor. Rahbar username:", username);
 }
 
 main()

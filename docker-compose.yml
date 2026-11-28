@@ -80,6 +80,32 @@ services:
     depends_on: [api]
     security_opt: ["no-new-privileges:true"]
 
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${API_PUBLIC_URL}
+        NEXT_PUBLIC_FILES_URL: ${S3_PUBLIC_URL}
+    restart: unless-stopped
+    depends_on: [api]
+    ports:
+      - "127.0.0.1:3000:3000"
+    security_opt: ["no-new-privileges:true"]
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${API_PUBLIC_URL}
+        NEXT_PUBLIC_FILES_URL: ${S3_PUBLIC_URL}
+    restart: unless-stopped
+    depends_on: [api]
+    ports:
+      - "127.0.0.1:3001:3001"
+    security_opt: ["no-new-privileges:true"]
+
 volumes:
   pgdata:
   redisdata:

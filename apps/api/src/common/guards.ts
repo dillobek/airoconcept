@@ -28,7 +28,7 @@ export function safeEqual(a: string, b: string): boolean {
 interface AccessPayload {
   sub: string;
   role: Role;
-  phone: string;
+  phone: string | null;
   typ: "access";
 }
 

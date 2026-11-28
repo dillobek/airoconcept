@@ -38,7 +38,10 @@ export class NotificationsService {
     for (const channel of channels) {
       const row = await this.prisma.notification.create({ data: { userId, phone: user.phone, channel, template, payload: vars } });
       try {
-        if (channel === "SMS") await this.sms.send(user.phone, text);
+        if (channel === "SMS") {
+          if (!user.phone) throw new Error("Telefon raqam bog'lanmagan");
+          await this.sms.send(user.phone, text);
+        }
         else if (channel === "TELEGRAM") {
           if (!user.telegramId) throw new Error("Telegram bog'lanmagan");
           await this.telegram(user.telegramId, text);
